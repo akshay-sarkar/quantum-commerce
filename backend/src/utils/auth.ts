@@ -2,7 +2,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { IUser } from '../models/User';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET =
+    process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '5d';
 
 // Generate JWT Token
@@ -11,12 +12,12 @@ export const generateToken = (user: IUser): string => {
         {
             userId: user._id,
             email: user.email,
-            userType: user.userType
+            userType: user.userType,
         },
         JWT_SECRET,
         {
-            expiresIn: JWT_EXPIRES_IN
-        }
+            expiresIn: JWT_EXPIRES_IN,
+        },
     );
 };
 
@@ -38,7 +39,7 @@ export const hashPassword = async (password: string): Promise<string> => {
 // compare password
 export const comparePassword = async (
     candidatePassword: string,
-    hashedPassword: string
+    hashedPassword: string,
 ): Promise<boolean> => {
     return bcrypt.compare(candidatePassword, hashedPassword);
 };
