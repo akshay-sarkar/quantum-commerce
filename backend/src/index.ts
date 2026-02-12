@@ -96,10 +96,27 @@ const resolvers = {
             await UserModel.findById(context.user.userId);
         }
     },
+
     User: {
         id: (parent: any) => parent._id,
         createdAt: (parent: any) => parent.createdAt.toISOString(),
     },
+
+    Mutation: {
+        register: async (_: any, { input }: any) => {
+            const { email, password, firstName, lastName } = input;
+
+            // Check if the user already exists
+            const existingUser = await UserModel.findOne({ email });
+            if (existingUser) {
+                throw new Error('User already exists with this email');
+            }
+            // Hash password
+            const hashedPassword = await hashPassword(password);
+
+
+        }
+    }
 };
 
 async function startServer() {

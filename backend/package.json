@@ -9,11 +9,10 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint",
-    "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.{ts,js,css,md}": "prettier --write",
-    "*.{ts,js}": "eslint --cache --fix"
+    "prepare": "husky",
+    "lint-staged": {
+      "*.{ts,js,css,md}": "prettier --write"
+    }
   },
   "keywords": [],
   "author": "",
