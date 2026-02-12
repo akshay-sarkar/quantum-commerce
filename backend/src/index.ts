@@ -1,9 +1,10 @@
 import express from "express";
 import { ApolloServer } from 'apollo-server-express';
-import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import dotenv from 'dotenv';
 import ProductModel from './models/Product';
 import { connectDB } from './config/database';
+import UserModel from './models/User';
+import { comparePassword, generateToken, hashPassword, verifyToken } from './utils/auth';
 
 dotenv.config();
 
@@ -17,12 +18,16 @@ const typeDefs = `
         product(id: ID!): Product,
         me: User,
     }
+    type Mutation {
+        register(input: RegisterInput!): AuthPayload!
+        login(input: LoginInput!): AuthPayload!
+    }
     type SystemStatus {
         status: String,
         timestamp: String,
         database: String
     }
-    type Product{
+    type Product {
         id: ID!,
         name: String!,
         description: String!,
@@ -54,7 +59,20 @@ const typeDefs = `
         token: String!,
         user: User!
     }
-    
+    type AuthPayload{
+        token: String!,
+        user: User!
+    }
+    input RegisterInput {
+        email: String!,
+        password: String!,
+        firstName: String!,
+        lastName: String!
+    }
+  input LoginInput {
+    email: String!
+    password: String!
+  }
 `;
 
 const resolvers = {
@@ -70,6 +88,12 @@ const resolvers = {
         },
         product: async (_: any, { id }: { id: string }) => {
             return await ProductModel.findById(id);
+        },
+        me: async (_: any, __: any, context: any) => {
+            if (!context.user) {
+                throw new Error('NOt Authorized');
+            }
+            await UserModel.findById(context.user.userId);
         }
     },
     User: {
