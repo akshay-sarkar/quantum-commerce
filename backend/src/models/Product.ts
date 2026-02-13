@@ -1,15 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 // Define your allowed list of values
-const allowedCategories = ['Electronics', 'Clothing', 'Books'];
+const allowedCategories = ['Electronics', 'Clothing', 'Books', 'Furniture'];
 
 export interface IProduct extends Document {
-    name: String,
-    description: String,
-    price: Number,
-    inventory: Number,
+    name: string,
+    description: string,
+    price: number,
+    inventory: number,
     category: string,
-    imageUrl: String,
+    imageUrl: string,
     createdAt: Date,
     addedBy: mongoose.Types.ObjectId,
 }

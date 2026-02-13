@@ -1,0 +1,14 @@
+# MongoDB
+MONGODB_URI=MONGO_URI HERE
+DB_NAME=quantumcommerce
+
+# JWT Secret (generate a random string)
+JWT_SECRET=YOUR_SUPER_SECRET_KEY_HERE
+
+# Server
+PORT=4000
+NODE_ENV=development
+
+#Password
+ADMIN_PASSWORD=ADMIN_PASSWORD
+USER_PASSWORD=USER_PASSWORD

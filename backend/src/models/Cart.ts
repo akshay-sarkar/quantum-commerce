@@ -1,13 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface ICart extends Document {
+export interface ICartItem {
     productId: mongoose.Types.ObjectId,
     quantity: number,
 }
 
-export interface ICartSchema extends Document {
+export interface ICart extends Document {
     userId: mongoose.Types.ObjectId,
-    items: ICart[],
+    items: ICartItem[],
     updatedAt: Date
 }
 
@@ -18,7 +18,7 @@ const CartSchema = new Schema({
         required: true,
         unique: true
     },
-    items: {
+    items: [{
         productId: {
             type: Schema.Types.ObjectId,
             ref: 'Product',
@@ -29,7 +29,7 @@ const CartSchema = new Schema({
             required: true,
             min: 1
         }
-    },
+    }],
     updatedAt: {
         type: Date,
         default: Date.now
