@@ -351,6 +351,7 @@ async function startServer() {
         introspection: true,
         csrfPrevention: true,
         cache: 'bounded',
+
         context: ({ req }) => {
             // Extract token from Authorization header
             const token = req.headers.authorization || '';
@@ -372,7 +373,14 @@ async function startServer() {
     });
 
     await server.start();
-    server.applyMiddleware({ app, path: '/graphql' });
+    server.applyMiddleware({
+        app,
+        path: '/graphql',
+        cors: {
+            origin: process.env.CORS_ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+            credentials: true
+        }
+    });
 
     const PORT = 4000;
     app.listen(PORT, () => {
