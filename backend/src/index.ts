@@ -33,6 +33,19 @@ const typeDefs = `
         timestamp: String,
         database: String
     }
+    type User {
+        id: ID!
+        email: String!
+        firstName: String!
+        lastName: String!
+        createdAt: String!
+        userType: String!
+        address: [Address!]!
+    }
+    type AuthPayload {
+        token: String!,
+        user: User!
+    }
     type Product {
         id: ID!,
         name: String!,
@@ -44,15 +57,6 @@ const typeDefs = `
         createdAt: String!,
         addedBy: User!
     }
-    type User {
-        id: ID!
-        email: String!
-        firstName: String!
-        lastName: String!
-        createdAt: String!
-        userType: String!
-        address: [Address!]!
-    }
     type Address {
         id: ID!
         street: String!
@@ -60,10 +64,6 @@ const typeDefs = `
         state: String!
         zip: String!
         country: String!
-    }
-    type AuthPayload {
-        token: String!,
-        user: User!
     }
     input RegisterInput {
         email: String!,
