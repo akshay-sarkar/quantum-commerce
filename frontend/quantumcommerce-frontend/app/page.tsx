@@ -8,7 +8,7 @@ export default function Home() {
     { name: 'Tailwind CSS', category: 'Styling' },
     { name: 'GraphQL', category: 'Data Fetching' },
     { name: 'Node.js', category: 'Backend Runtime' },
-    { name: 'MySQL', category: 'Relational Database' },
+    { name: 'AWS', category: 'Cloud Deployement' },
     { name: 'MongoDB', category: 'NoSQL Database' },
     { name: 'Redis', category: 'Caching & Sessions' },
     { name: 'JWT & Cookies', category: 'Authentication' },
@@ -19,7 +19,7 @@ export default function Home() {
       <div className="max-w-3xl w-full space-y-8">
         {/* Hero Section */}
         <section className="text-center space-y-4">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-emerald-400">
             Quantum Commerce
           </h1>
           <p className="text-lg md:text-xl text-slate-400 font-light">
