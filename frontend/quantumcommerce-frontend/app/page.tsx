@@ -8,7 +8,7 @@ export default function Home() {
     { name: 'Tailwind CSS', category: 'Styling' },
     { name: 'GraphQL', category: 'Data Fetching' },
     { name: 'Node.js', category: 'Backend Runtime' },
-    { name: 'MySQL', category: 'Relational Database' },
+    { name: 'AWS', category: 'Cloud Deployement' },
     { name: 'MongoDB', category: 'NoSQL Database' },
     { name: 'Redis', category: 'Caching & Sessions' },
     { name: 'JWT & Cookies', category: 'Authentication' },

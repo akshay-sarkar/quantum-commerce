@@ -1,0 +1,115 @@
+name: Deploy QuantumCommerce
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Job 1: Deploy Backend to EC2
+  deploy-backend:
+    name: Deploy Backend to AWS EC2
+    runs-on: ubuntu-latest
+    
+    # Only run if backend files changed
+    if: contains(github.event.head_commit.modified, 'backend/') || contains(github.event.head_commit.added, 'backend/')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Get full history for version tags
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Generate version number
+        id: version
+        run: |
+          # Get latest tag, increment patch version
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+          echo "Latest tag: $LATEST_TAG"
+          
+          # Extract version numbers
+          MAJOR=$(echo $LATEST_TAG | cut -d. -f1 | sed 's/v//')
+          MINOR=$(echo $LATEST_TAG | cut -d. -f2)
+          PATCH=$(echo $LATEST_TAG | cut -d. -f3)
+          
+          # Increment patch version
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/quantum-commerce:${{ steps.version.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/quantum-commerce:latest
+
+      - name: Create Git tag
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag -a "v${{ steps.version.outputs.version }}" -m "Release version ${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~
+            ./deploy.sh ${{ steps.version.outputs.version }}
+
+      - name: Deployment Summary
+        run: |
+          echo "✅ Backend deployed successfully!"
+          echo "Version: ${{ steps.version.outputs.version }}"
+          echo "Docker Image: ${{ secrets.DOCKERHUB_USERNAME }}/quantum-commerce:${{ steps.version.outputs.version }}"
+          echo "EC2 Host: ${{ secrets.EC2_HOST }}"
+
+  # Job 2: Frontend Build Check (Vercel auto-deploys)
+  check-frontend:
+    name: Check Frontend Build
+    runs-on: ubuntu-latest
+    
+    # Only run if frontend files changed
+    if: contains(github.event.head_commit.modified, 'frontend/') || contains(github.event.head_commit.added, 'frontend/')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/quantumcommerce-frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend/quantumcommerce-frontend
+        run: npm ci
+
+      - name: Run build
+        working-directory: frontend/quantumcommerce-frontend
+        run: npm run build
+
+      - name: Build Summary
+        run: |
+          echo "✅ Frontend build successful!"
+          echo "Vercel will auto-deploy this build."
