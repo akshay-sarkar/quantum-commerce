@@ -65,21 +65,23 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(null);
+    const [user, setUser] = useState<User | null>(() => {
+        if (typeof window === 'undefined') return null;
+        const savedUser = sessionStorage.getItem('user');
+        if (!savedUser) return null;
+        try {
+            return JSON.parse(savedUser);
+        } catch {
+            sessionStorage.removeItem('user');
+            return null;
+        }
+    });
+    const [token, setToken] = useState<string | null>(() => {
+        if (typeof window === 'undefined') return null;
+        return sessionStorage.getItem('token');
+    });
     const [loginMutation] = useMutation<LoginResponse>(LOGIN_MUTATION);
     const [registerMutation] = useMutation<RegisterResponse>(REGISTER_MUTATION);
-
-    // Initialize from sessionStorage only on mount
-    useEffect(() => {
-        const savedToken = sessionStorage.getItem('token');
-        const savedUser = sessionStorage.getItem('user');
-
-        if (savedToken && savedUser) {
-            setToken(savedToken);
-            setUser(JSON.parse(savedUser));
-        }
-    }, []);
 
     // login call
     const login = async (email: string, password: string) => {

@@ -7,25 +7,34 @@ export default function Navbar() {
     const { user, isAuthenticated, logout } = useAuth();
 
     return (
-        <nav className="bg-gray-800 text-white">
-            <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                <Link href="/" className="text-xl font-bold">
+        <nav className="bg-[#060606] border-b border-[#1a1a1a]">
+            <div className="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
+                <Link
+                    href="/"
+                    className="font-display text-xl tracking-tight text-[#F0EDE6]"
+                >
                     Quantum Commerce
                 </Link>
 
-                <div className="flex items-center gap-6">
-                    <Link href="/products" className="hover:text-gray-300">
+                <div className="flex items-center gap-8">
+                    <Link
+                        href="/products"
+                        className="text-sm tracking-wide text-[#8A8578] hover:text-[#F0EDE6] transition-colors duration-300"
+                    >
                         Products
                     </Link>
 
                     {isAuthenticated ? (
                         <>
-                            <span className="text-gray-300">
-                                Welcome, {user?.firstName}!
+                            <span className="hidden sm:inline text-sm text-[#8A8578]">
+                                Welcome,{' '}
+                                <span className="text-[#C9A96E]">
+                                    {user?.firstName}
+                                </span>
                             </span>
                             <button
                                 onClick={logout}
-                                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+                                className="text-sm tracking-wide text-[#8A8578] hover:text-[#F0EDE6] transition-colors duration-300"
                             >
                                 Logout
                             </button>
@@ -33,7 +42,7 @@ export default function Navbar() {
                     ) : (
                         <Link
                             href="/login"
-                            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
+                            className="px-5 py-2 border border-[#C9A96E] text-[#C9A96E] text-sm tracking-wide uppercase hover:bg-[#C9A96E] hover:text-[#060606] transition-all duration-300"
                         >
                             Login
                         </Link>

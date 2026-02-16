@@ -10,6 +10,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bodoni);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +23,105 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ═══ Quantum Commerce — Homepage ═══ */
+
+@keyframes qc-fade-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes qc-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes qc-scale-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes qc-drift {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.18); }
+}
+
+@keyframes qc-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+.qc-up {
+  opacity: 0;
+  animation: qc-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.qc-in {
+  opacity: 0;
+  animation: qc-fade 0.7s ease-out forwards;
+}
+
+.qc-expand {
+  transform: scaleX(0);
+  animation: qc-scale-x 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hero background grid */
+.qc-grid {
+  background-image:
+    linear-gradient(rgba(201, 169, 110, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 169, 110, 0.035) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* Hero floating orbs */
+.qc-orb-1 {
+  position: absolute;
+  width: clamp(300px, 45vw, 600px);
+  height: clamp(300px, 45vw, 600px);
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(201, 169, 110, 0.1) 0%, transparent 70%);
+  top: 40%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+  filter: blur(60px);
+  pointer-events: none;
+  animation: qc-drift 12s ease-in-out infinite;
+}
+
+.qc-orb-2 {
+  position: absolute;
+  width: clamp(200px, 30vw, 350px);
+  height: clamp(200px, 30vw, 350px);
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(201, 169, 110, 0.07) 0%, transparent 70%);
+  top: 65%;
+  left: 28%;
+  transform: translate(-50%, -50%);
+  filter: blur(50px);
+  pointer-events: none;
+  animation: qc-drift 9s ease-in-out infinite reverse;
+}
+
+/* Category card interactions */
+.qc-card {
+  transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.qc-card:hover {
+  border-color: #C9A96E;
+  transform: translateY(-4px);
+}
+.qc-card:hover .qc-arrow {
+  transform: translateX(6px);
+  color: #C9A96E;
+}
+.qc-arrow {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Scroll indicator */
+.qc-scroll {
+  animation: qc-bounce 2s ease-in-out infinite;
 }
