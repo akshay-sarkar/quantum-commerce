@@ -68,7 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(() => {
         if (typeof window === 'undefined') return null;
         const savedUser = sessionStorage.getItem('user');
-        return savedUser ? JSON.parse(savedUser) : null;
+        if (!savedUser) return null;
+        try {
+            return JSON.parse(savedUser);
+        } catch {
+            sessionStorage.removeItem('user');
+            return null;
+        }
     });
     const [token, setToken] = useState<string | null>(() => {
         if (typeof window === 'undefined') return null;
