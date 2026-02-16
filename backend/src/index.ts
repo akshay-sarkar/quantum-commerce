@@ -136,7 +136,6 @@ const resolvers = {
             }
             // Hash password
             const hashedPassword = await hashPassword(password);
-            console.log(hashPassword);
             const user = await UserModel.create({
                 email,
                 password: hashedPassword,
