@@ -146,7 +146,7 @@ export default function LoginPage() {
                             id="password"
                             name="password"
                             type="password"
-                            autoComplete="current-password"
+                            autoComplete={isLogin ? "current-password" : "new-password"}
                             required
                             className={inputClasses}
                             placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
