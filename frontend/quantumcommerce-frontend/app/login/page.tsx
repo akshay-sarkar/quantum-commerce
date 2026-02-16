@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+const inputClasses =
+    'w-full bg-transparent border border-[#1a1a1a] text-[#F0EDE6] placeholder-[#5a5650] px-4 py-3 text-sm tracking-wide focus:border-[#C9A96E] focus:outline-none transition-colors duration-300';
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true);
@@ -38,108 +42,145 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        {isLogin ? 'Sign in to your account' : 'Create new account'}
+        <div className="min-h-screen bg-[#060606] flex items-center justify-center px-6 py-12 relative">
+            {/* Ambient glow */}
+            <div className="qc-orb-1 opacity-50" />
+
+            <div className="relative z-10 max-w-md w-full">
+                {/* Header */}
+                <div className="text-center mb-12">
+                    <Link
+                        href="/"
+                        className="font-display text-sm tracking-[0.2em] uppercase text-[#C9A96E] hover:text-[#E2D1A8] transition-colors duration-300"
+                    >
+                        Quantum Commerce
+                    </Link>
+                    <h2
+                        className="font-display mt-6 tracking-[-0.02em] text-[#F0EDE6]"
+                        style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}
+                    >
+                        {isLogin ? 'Sign In' : 'Create Account'}
                     </h2>
+                    <p className="mt-3 text-sm text-[#8A8578]">
+                        {isLogin
+                            ? 'Welcome back to Quantum Commerce'
+                            : 'Join the future of commerce'}
+                    </p>
                 </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="rounded-md shadow-sm space-y-4">
-                        {!isLogin && (
-                            <>
-                                <div>
-                                    <label htmlFor="firstName" className="sr-only">
-                                        First Name
-                                    </label>
-                                    <input
-                                        id="firstName"
-                                        name="firstName"
-                                        type="text"
-                                        required={!isLogin}
-                                        className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                        placeholder="First Name"
-                                        value={firstName}
-                                        onChange={(e) => setFirstName(e.target.value)}
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="lastName" className="sr-only">
-                                        Last Name
-                                    </label>
-                                    <input
-                                        id="lastName"
-                                        name="lastName"
-                                        type="text"
-                                        required={!isLogin}
-                                        className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                        placeholder="Last Name"
-                                        value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)}
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        <div>
-                            <label htmlFor="email" className="sr-only">
-                                Email address
-                            </label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                placeholder="Email address"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    {!isLogin && (
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label
+                                    htmlFor="firstName"
+                                    className="block text-xs tracking-wide text-[#8A8578] uppercase mb-2"
+                                >
+                                    First Name
+                                </label>
+                                <input
+                                    id="firstName"
+                                    name="firstName"
+                                    type="text"
+                                    required={!isLogin}
+                                    className={inputClasses}
+                                    placeholder="John"
+                                    value={firstName}
+                                    onChange={(e) =>
+                                        setFirstName(e.target.value)
+                                    }
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="lastName"
+                                    className="block text-xs tracking-wide text-[#8A8578] uppercase mb-2"
+                                >
+                                    Last Name
+                                </label>
+                                <input
+                                    id="lastName"
+                                    name="lastName"
+                                    type="text"
+                                    required={!isLogin}
+                                    className={inputClasses}
+                                    placeholder="Doe"
+                                    value={lastName}
+                                    onChange={(e) =>
+                                        setLastName(e.target.value)
+                                    }
+                                />
+                            </div>
                         </div>
-
-                        <div>
-                            <label htmlFor="password" className="sr-only">
-                                Password
-                            </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="current-password"
-                                required
-                                className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    {error && (
-                        <div className="text-red-500 text-sm text-center">{error}</div>
                     )}
 
                     <div>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
+                        <label
+                            htmlFor="email"
+                            className="block text-xs tracking-wide text-[#8A8578] uppercase mb-2"
                         >
-                            {loading ? 'Please wait...' : isLogin ? 'Sign in' : 'Sign up'}
-                        </button>
+                            Email Address
+                        </label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            className={inputClasses}
+                            placeholder="you@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
                     </div>
 
-                    <div className="text-center">
+                    <div>
+                        <label
+                            htmlFor="password"
+                            className="block text-xs tracking-wide text-[#8A8578] uppercase mb-2"
+                        >
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete="current-password"
+                            required
+                            className={inputClasses}
+                            placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+
+                    {error && (
+                        <div className="text-sm text-red-400 text-center py-2">
+                            {error}
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-3.5 mt-2 bg-[#C9A96E] text-[#060606] font-medium tracking-wide text-sm uppercase hover:bg-[#E2D1A8] transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        {loading
+                            ? 'Please wait...'
+                            : isLogin
+                              ? 'Sign In'
+                              : 'Create Account'}
+                    </button>
+
+                    <div className="text-center pt-4">
                         <button
                             type="button"
                             onClick={() => {
                                 setIsLogin(!isLogin);
                                 setError('');
                             }}
-                            className="text-sm text-blue-600 hover:text-blue-500"
+                            className="text-sm text-[#C9A96E] hover:text-[#E2D1A8] transition-colors duration-300"
                         >
                             {isLogin
                                 ? "Don't have an account? Sign up"
@@ -150,5 +191,4 @@ export default function LoginPage() {
             </div>
         </div>
     );
-
 }
