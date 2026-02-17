@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const inputClasses =
-    'w-full bg-transparent border border-[#1a1a1a] text-[#F0EDE6] placeholder-[#5a5650] px-4 py-3 text-sm tracking-wide focus:border-[#C9A96E] focus:outline-none transition-colors duration-300';
+    'w-full bg-transparent border border-qc-border text-qc-text placeholder-qc-placeholder px-4 py-3 text-sm tracking-wide focus:border-qc-accent focus:outline-none transition-colors duration-300';
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true);
@@ -42,7 +42,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#060606] flex items-center justify-center px-6 py-12 relative">
+        <div className="min-h-screen bg-qc-bg flex items-center justify-center px-6 py-12 relative transition-colors duration-300">
             {/* Ambient glow */}
             <div className="qc-orb-1 opacity-50" />
 
@@ -51,17 +51,17 @@ export default function LoginPage() {
                 <div className="text-center mb-12">
                     <Link
                         href="/"
-                        className="font-display text-sm tracking-[0.2em] uppercase text-[#C9A96E] hover:text-[#E2D1A8] transition-colors duration-300"
+                        className="font-display text-sm tracking-[0.2em] uppercase text-qc-accent hover:text-qc-accent-hover transition-colors duration-300"
                     >
                         Quantum Commerce
                     </Link>
                     <h2
-                        className="font-display mt-6 tracking-[-0.02em] text-[#F0EDE6]"
+                        className="font-display mt-6 tracking-[-0.02em] text-qc-text"
                         style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}
                     >
                         {isLogin ? 'Sign In' : 'Create Account'}
                     </h2>
-                    <p className="mt-3 text-sm text-[#8A8578]">
+                    <p className="mt-3 text-sm text-qc-muted">
                         {isLogin
                             ? 'Welcome back to Quantum Commerce'
                             : 'Join the future of commerce'}
@@ -75,7 +75,7 @@ export default function LoginPage() {
                             <div>
                                 <label
                                     htmlFor="firstName"
-                                    className="block text-xs tracking-wide text-[#8A8578] uppercase mb-2"
+                                    className="block text-xs tracking-wide text-qc-muted uppercase mb-2"
                                 >
                                     First Name
                                 </label>
@@ -95,7 +95,7 @@ export default function LoginPage() {
                             <div>
                                 <label
                                     htmlFor="lastName"
-                                    className="block text-xs tracking-wide text-[#8A8578] uppercase mb-2"
+                                    className="block text-xs tracking-wide text-qc-muted uppercase mb-2"
                                 >
                                     Last Name
                                 </label>
@@ -118,7 +118,7 @@ export default function LoginPage() {
                     <div>
                         <label
                             htmlFor="email"
-                            className="block text-xs tracking-wide text-[#8A8578] uppercase mb-2"
+                            className="block text-xs tracking-wide text-qc-muted uppercase mb-2"
                         >
                             Email Address
                         </label>
@@ -138,7 +138,7 @@ export default function LoginPage() {
                     <div>
                         <label
                             htmlFor="password"
-                            className="block text-xs tracking-wide text-[#8A8578] uppercase mb-2"
+                            className="block text-xs tracking-wide text-qc-muted uppercase mb-2"
                         >
                             Password
                         </label>
@@ -164,7 +164,7 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3.5 mt-2 bg-[#C9A96E] text-[#060606] font-medium tracking-wide text-sm uppercase hover:bg-[#E2D1A8] transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="w-full py-3.5 mt-2 bg-qc-accent text-qc-accent-on font-medium tracking-wide text-sm uppercase hover:bg-qc-accent-hover transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         {loading
                             ? 'Please wait...'
@@ -180,7 +180,7 @@ export default function LoginPage() {
                                 setIsLogin(!isLogin);
                                 setError('');
                             }}
-                            className="text-sm text-[#C9A96E] hover:text-[#E2D1A8] transition-colors duration-300"
+                            className="text-sm text-qc-accent hover:text-qc-accent-hover transition-colors duration-300"
                         >
                             {isLogin
                                 ? "Don't have an account? Sign up"

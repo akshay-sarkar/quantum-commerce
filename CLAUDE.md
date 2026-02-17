@@ -89,7 +89,7 @@ cd backend && npm run seed
 
 ## Repository Structure
 
-```
+```text
 quantum-commerce/
 ├── .github/workflows/deploy.yml       # CI/CD pipeline
 ├── backend/
