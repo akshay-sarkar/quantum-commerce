@@ -8,10 +8,21 @@ export default function CartPage() {
 
     return (
         <ProtectedRoute>
-            <div className="container mx-auto p-8">
-                <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
-                <p className="text-gray-600">Welcome to your cart, {user?.firstName}!</p>
-                {/* Cart functionality will go here */}
+            <div className="min-h-screen bg-qc-bg px-6 py-12 transition-colors duration-300">
+                <div className="max-w-6xl mx-auto">
+                    <h1
+                        className="font-display text-qc-text tracking-[-0.02em] mb-8"
+                        style={{
+                            fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+                        }}
+                    >
+                        Shopping Cart
+                    </h1>
+                    <p className="text-qc-muted">
+                        Welcome to your cart, {user?.firstName}!
+                    </p>
+                    {/* Cart functionality will go here */}
+                </div>
             </div>
         </ProtectedRoute>
     );

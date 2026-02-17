@@ -1,32 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ═══ Theme Tokens ═══ */
+
+:root,
+[data-theme="dark"] {
+  --qc-bg: #060606;
+  --qc-bg-warm: #0d0b08;
+  --qc-surface: #111111;
+  --qc-border: #1a1a1a;
+  --qc-text: #F0EDE6;
+  --qc-muted: #8A8578;
+  --qc-accent: #C9A96E;
+  --qc-accent-hover: #E2D1A8;
+  --qc-accent-on: #060606;
+  --qc-accent-faint: rgba(201, 169, 110, 0.3);
+  --qc-placeholder: #5a5650;
+}
+
+[data-theme="light"] {
+  --qc-bg: #FAF9F6;
+  --qc-bg-warm: #F3EFE8;
+  --qc-surface: #F0EDE6;
+  --qc-border: #DDD9D0;
+  --qc-text: #1A1816;
+  --qc-muted: #7A756D;
+  --qc-accent: #9A7B4F;
+  --qc-accent-hover: #826839;
+  --qc-accent-on: #FFFFFF;
+  --qc-accent-faint: rgba(154, 123, 79, 0.2);
+  --qc-placeholder: #B0A99E;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-qc-bg: var(--qc-bg);
+  --color-qc-bg-warm: var(--qc-bg-warm);
+  --color-qc-surface: var(--qc-surface);
+  --color-qc-border: var(--qc-border);
+  --color-qc-text: var(--qc-text);
+  --color-qc-muted: var(--qc-muted);
+  --color-qc-accent: var(--qc-accent);
+  --color-qc-accent-hover: var(--qc-accent-hover);
+  --color-qc-accent-on: var(--qc-accent-on);
+  --color-qc-accent-faint: var(--qc-accent-faint);
+  --color-qc-placeholder: var(--qc-placeholder);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-bodoni);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--qc-bg);
+  color: var(--qc-text);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ═══ Quantum Commerce — Homepage ═══ */
+/* ═══ Keyframes ═══ */
 
 @keyframes qc-fade-up {
   from { opacity: 0; transform: translateY(32px); }
@@ -53,6 +82,8 @@ body {
   50% { transform: translateY(6px); }
 }
 
+/* ═══ Animation Utilities ═══ */
+
 .qc-up {
   opacity: 0;
   animation: qc-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -68,21 +99,21 @@ body {
   animation: qc-scale-x 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Hero background grid */
+/* ═══ Hero Effects ═══ */
+
 .qc-grid {
   background-image:
-    linear-gradient(rgba(201, 169, 110, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(201, 169, 110, 0.035) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--qc-accent) 3.5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--qc-accent) 3.5%, transparent) 1px, transparent 1px);
   background-size: 80px 80px;
 }
 
-/* Hero floating orbs */
 .qc-orb-1 {
   position: absolute;
   width: clamp(300px, 45vw, 600px);
   height: clamp(300px, 45vw, 600px);
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(201, 169, 110, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--qc-accent) 10%, transparent) 0%, transparent 70%);
   top: 40%;
   left: 55%;
   transform: translate(-50%, -50%);
@@ -96,7 +127,7 @@ body {
   width: clamp(200px, 30vw, 350px);
   height: clamp(200px, 30vw, 350px);
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(201, 169, 110, 0.07) 0%, transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--qc-accent) 7%, transparent) 0%, transparent 70%);
   top: 65%;
   left: 28%;
   transform: translate(-50%, -50%);
@@ -105,23 +136,28 @@ body {
   animation: qc-drift 9s ease-in-out infinite reverse;
 }
 
-/* Category card interactions */
+/* ═══ Interactive Elements ═══ */
+
 .qc-card {
   transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .qc-card:hover {
-  border-color: #C9A96E;
+  border-color: var(--qc-accent);
   transform: translateY(-4px);
 }
 .qc-card:hover .qc-arrow {
   transform: translateX(6px);
-  color: #C9A96E;
+  color: var(--qc-accent);
 }
 .qc-arrow {
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
-/* Scroll indicator */
 .qc-scroll {
   animation: qc-bounce 2s ease-in-out infinite;
 }
+
+/* Theme toggle icons — CSS-driven to avoid hydration mismatch */
+.qc-sun, .qc-moon { display: none; }
+[data-theme="dark"] .qc-sun { display: block; }
+[data-theme="light"] .qc-moon { display: block; }
