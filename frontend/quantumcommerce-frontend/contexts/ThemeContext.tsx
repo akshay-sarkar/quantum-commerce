@@ -31,7 +31,24 @@ function subscribe(listener: () => void) {
 }
 
 function getSnapshot(): Theme {
-    return (localStorage.getItem('qc-theme') as Theme) || 'dark';
+    try {
+        const stored = localStorage.getItem('qc-theme') as Theme | null;
+        if (stored) return stored;
+    } catch {
+        // localStorage unavailable (e.g. restricted browsing context)
+    }
+    if (typeof document !== 'undefined') {
+        const attr = document.documentElement.getAttribute(
+            'data-theme',
+        ) as Theme | null;
+        if (attr) return attr;
+    }
+    if (typeof window !== 'undefined') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+    }
+    return 'dark';
 }
 
 function getServerSnapshot(): Theme {
@@ -39,7 +56,11 @@ function getServerSnapshot(): Theme {
 }
 
 function applyTheme(theme: Theme) {
-    localStorage.setItem('qc-theme', theme);
+    try {
+        localStorage.setItem('qc-theme', theme);
+    } catch {
+        // localStorage unavailable
+    }
     document.documentElement.setAttribute('data-theme', theme);
     emitChange();
 }
