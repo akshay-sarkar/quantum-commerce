@@ -5,7 +5,8 @@ import {
     useContext,
     ReactNode,
     useState,
-    useEffect
+    useEffect,
+    useLayoutEffect
 } from 'react';
 import { useLocalStorage } from 'usehooks-ts'
 
@@ -23,7 +24,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setValue((theme: string) => (theme === 'dark' ? 'light' : 'dark'));
     };
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         document.documentElement.setAttribute('data-theme', value);
     }, [value, setValue]);
 
