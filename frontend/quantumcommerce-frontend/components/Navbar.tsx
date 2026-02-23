@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function Navbar() {
     const { user, isAuthenticated, logout } = useAuth();
-    const { toggleTheme } = useTheme();
+    const { theme, toggleTheme } = useTheme();
 
     return (
         <nav className="bg-qc-bg border-b border-qc-border transition-colors duration-300">

@@ -5,6 +5,7 @@ import ApolloProviderWrapper from "@/providers/ApolloProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,13 +36,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('qc-theme');if(t){document.documentElement.setAttribute('data-theme',t)}else{var d=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',d)}}catch(e){}})()`,
-          }}
-        />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${bodoniModa.variable} antialiased`}
       >
@@ -50,6 +44,7 @@ export default function RootLayout({
             <AuthProvider>
               <Navbar />
               {children}
+              <Footer/>
             </AuthProvider>
           </ApolloProviderWrapper>
         </ThemeProvider>
