@@ -18,19 +18,17 @@ const ThemeContext = createContext<ThemeContextType| null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [value, setValue] = useLocalStorage('qc-theme', 'dark');
-    const [theme, setTheme] = useState(value);
 
     const toggleTheme = () => {
-        setTheme((theme: string) => (theme === 'dark' ? 'light' : 'dark'));
+        setValue((theme: string) => (theme === 'dark' ? 'light' : 'dark'));
     };
 
     useEffect(() => {
-        document.documentElement.setAttribute('data-theme', theme);
-        setValue(theme);
-    }, [theme]);
+        document.documentElement.setAttribute('data-theme', value);
+    }, [value, setValue]);
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <ThemeContext.Provider value={{ theme: value, toggleTheme }}>
             {children}
         </ThemeContext.Provider>
     );
