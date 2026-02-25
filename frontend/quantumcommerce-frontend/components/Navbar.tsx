@@ -22,6 +22,7 @@ export default function Navbar() {
                     <Link
                         href="/products"
                         className="text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
+                        aria-label="Products"
                     >
                         Products
                     </Link>
@@ -29,6 +30,7 @@ export default function Navbar() {
                     <Link
                         href="/about"
                         className="text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
+                        aria-label="About"
                     >
                         About
                     </Link>
@@ -76,6 +78,28 @@ export default function Navbar() {
                         )}
                     </button>
 
+
+                    <Link
+                        href="/cart"
+                        className="text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
+                        aria-label="Cart"
+                    >
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                        </svg>
+                    </Link>
+
                     {isAuthenticated ? (
                         <>
                             <span className="hidden sm:inline text-sm text-qc-muted">
@@ -87,6 +111,7 @@ export default function Navbar() {
                             <button
                                 onClick={logout}
                                 className="text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
+                                aria-label="Logout"
                             >
                                 Logout
                             </button>
@@ -95,6 +120,7 @@ export default function Navbar() {
                         <Link
                             href="/login"
                             className="px-5 py-2 border border-qc-accent text-qc-accent text-sm tracking-wide uppercase hover:bg-qc-accent hover:text-qc-accent-on transition-all duration-300"
+                            aria-label="Login"
                         >
                             Login
                         </Link>

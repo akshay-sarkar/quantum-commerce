@@ -56,6 +56,7 @@ const typeDefs = `
         imageUrl: String!,
         createdAt: String!,
         addedBy: User!
+        isActive: Boolean!
     }
     type Address {
         id: ID!

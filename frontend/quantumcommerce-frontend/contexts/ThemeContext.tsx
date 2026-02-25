@@ -4,11 +4,11 @@ import {
     createContext,
     useContext,
     ReactNode,
-    useState,
-    useEffect,
+    Dispatch,
+    SetStateAction,    
     useLayoutEffect
 } from 'react';
-import { useLocalStorage } from 'usehooks-ts'
+import useLocalStorage from '../hooks/useLocalStorage';
 
 type ThemeContextType = {
   theme: string
@@ -18,10 +18,10 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType| null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-    const [value, setValue] = useLocalStorage('qc-theme', 'dark');
+    const [value, setValue] = useLocalStorage<string>('qc-theme', 'dark') as [string, Dispatch<SetStateAction<string>>];
 
     const toggleTheme = () => {
-        setValue((theme: string) => (theme === 'dark' ? 'light' : 'dark'));
+        setValue((prev: string) => (prev === 'dark' ? 'light' : 'dark'));
     };
 
     useLayoutEffect(() => {
