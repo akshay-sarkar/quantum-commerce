@@ -43,8 +43,10 @@ export default function RootLayout({
           <ApolloProviderWrapper>
             <AuthProvider>
               <Navbar />
-              {children}
-              <Footer/>
+              <main className="pt-16"> {/* adjust the value to match your nav’s height */}
+                {children}
+              </main>
+              <Footer />
             </AuthProvider>
           </ApolloProviderWrapper>
         </ThemeProvider>

@@ -2,14 +2,17 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import useCartStore from '@/stores/cartStore';
 import Link from 'next/link';
 
 export default function Navbar() {
     const { user, isAuthenticated, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
+    const cartCount = useCartStore(state => state.cart.length);
+
 
     return (
-        <nav className="bg-qc-bg border-b border-qc-border transition-colors duration-300">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-qc-bg border-b border-qc-border transition-colors duration-300">
             <div className="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
                 <Link
                     href="/"
@@ -81,7 +84,7 @@ export default function Navbar() {
 
                     <Link
                         href="/cart"
-                        className="text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
+                        className="relative text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
                         aria-label="Cart"
                     >
                         <svg
@@ -98,6 +101,12 @@ export default function Navbar() {
                             <circle cx="20" cy="21" r="1" />
                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                         </svg>
+                        {cartCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-qc-accent text-qc-accent-on text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                {cartCount}
+                            </span>
+                        )}
+                         
                     </Link>
 
                     {isAuthenticated ? (

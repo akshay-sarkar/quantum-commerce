@@ -1,8 +1,9 @@
 'use client';
 
-import Image from 'next/image';
+
 import { IProduct } from "@/models";
 import useCartStore from '@/stores/cartStore';
+import ProductImage from "@/components/ProductImage";
 
 function Product(product: IProduct) {
     const addToCart = useCartStore(state => state.addToCart);
@@ -14,13 +15,7 @@ function Product(product: IProduct) {
         className="qc-card border border-qc-border overflow-hidden"
     >
         {product.imageUrl && (
-            <Image
-                width={500}
-                height={500}
-                src={product.imageUrl}
-                alt={product.name}
-                className="w-full h-48 object-cover"
-                unoptimized />
+            <ProductImage product={product}/>
         )}
         <div className="p-6">
             <h2 className="text-lg font-medium text-qc-text mb-2">
