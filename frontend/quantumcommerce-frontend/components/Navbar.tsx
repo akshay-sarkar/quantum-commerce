@@ -2,14 +2,17 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import useCartStore from '@/stores/cartStore';
 import Link from 'next/link';
 
 export default function Navbar() {
     const { user, isAuthenticated, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
+    const cartCount = useCartStore(state => state.cart.length);
+
 
     return (
-        <nav className="bg-qc-bg border-b border-qc-border transition-colors duration-300">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-qc-bg border-b border-qc-border transition-colors duration-300">
             <div className="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
                 <Link
                     href="/"
@@ -22,6 +25,7 @@ export default function Navbar() {
                     <Link
                         href="/products"
                         className="text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
+                        aria-label="Products"
                     >
                         Products
                     </Link>
@@ -29,6 +33,7 @@ export default function Navbar() {
                     <Link
                         href="/about"
                         className="text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
+                        aria-label="About"
                     >
                         About
                     </Link>
@@ -76,6 +81,34 @@ export default function Navbar() {
                         )}
                     </button>
 
+
+                    <Link
+                        href="/cart"
+                        className="relative text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
+                        aria-label="Cart"
+                    >
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                        </svg>
+                        {cartCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-qc-accent text-qc-accent-on text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                {cartCount}
+                            </span>
+                        )}
+                         
+                    </Link>
+
                     {isAuthenticated ? (
                         <>
                             <span className="hidden sm:inline text-sm text-qc-muted">
@@ -87,6 +120,7 @@ export default function Navbar() {
                             <button
                                 onClick={logout}
                                 className="text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"
+                                aria-label="Logout"
                             >
                                 Logout
                             </button>
@@ -95,6 +129,7 @@ export default function Navbar() {
                         <Link
                             href="/login"
                             className="px-5 py-2 border border-qc-accent text-qc-accent text-sm tracking-wide uppercase hover:bg-qc-accent hover:text-qc-accent-on transition-all duration-300"
+                            aria-label="Login"
                         >
                             Login
                         </Link>

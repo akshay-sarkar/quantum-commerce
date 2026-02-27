@@ -51,6 +51,7 @@ async function seedDatabase() {
         // Create sample products with admin as addedBy
         const sampleProducts = [
             {
+                id: '1',
                 name: 'MacBook Pro 16"',
                 description: 'Powerful laptop with M3 chip, 16GB RAM, 512GB SSD',
                 price: 2499.99,
@@ -60,6 +61,7 @@ async function seedDatabase() {
                 addedBy: adminUser._id,
             },
             {
+                id: '2',
                 name: 'Sony WH-1000XM5 Headphones',
                 description: 'Industry-leading noise cancellation, 30-hour battery',
                 price: 399.99,
@@ -69,6 +71,7 @@ async function seedDatabase() {
                 addedBy: adminUser._id
             },
             {
+                id: '3',
                 name: 'Ergonomic Office Chair',
                 description: 'Lumbar support, adjustable armrests, breathable mesh',
                 price: 299.99,
@@ -78,6 +81,7 @@ async function seedDatabase() {
                 addedBy: adminUser._id
             },
             {
+                id: '4',
                 name: 'Mechanical Keyboard',
                 description: 'Cherry MX Blue switches, RGB backlight, USB-C',
                 price: 129.99,
@@ -87,6 +91,7 @@ async function seedDatabase() {
                 addedBy: adminUser._id
             },
             {
+                id: '5',
                 name: 'Standing Desk',
                 description: 'Electric height adjustment, 60" x 30" surface',
                 price: 599.99,
@@ -96,6 +101,7 @@ async function seedDatabase() {
                 addedBy: adminUser._id
             },
             {
+                id: '6',
                 name: 'iPhone 15 Pro',
                 description: 'Titanium design, A17 Pro chip, 256GB storage',
                 price: 1199.99,
@@ -105,6 +111,7 @@ async function seedDatabase() {
                 addedBy: adminUser._id
             },
             {
+                id: '7',
                 name: 'Leather Executive Chair',
                 description: 'Genuine leather, high back, 360° swivel',
                 price: 449.99,
@@ -114,6 +121,7 @@ async function seedDatabase() {
                 addedBy: adminUser._id
             },
             {
+                id: '8',
                 name: 'Wireless Mouse',
                 description: 'Ergonomic design, 6-month battery, precision tracking',
                 price: 49.99,
@@ -123,6 +131,7 @@ async function seedDatabase() {
                 addedBy: adminUser._id
             },
             {
+                id: '9',
                 name: '4K Monitor 27"',
                 description: 'IPS panel, HDR support, USB-C connectivity',
                 price: 399.99,
@@ -132,6 +141,7 @@ async function seedDatabase() {
                 addedBy: adminUser._id
             },
             {
+                id: '10',
                 name: 'Desk Lamp LED',
                 description: 'Adjustable brightness, USB charging port, modern design',
                 price: 79.99,
