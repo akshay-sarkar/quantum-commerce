@@ -1,21 +1,14 @@
 'use client';
 
-import Image from 'next/image';
-import ProtectedRoute from '@/components/ProtectedRoute';
-import { useAuth } from '@/contexts/AuthContext';
 import ProductImage from '@/components/ProductImage';   
 import useCartStore from '@/stores/cartStore';  
-import React from 'react';
 
-function CartList(props) {
+function CartList() {
 
     const cartItems = useCartStore(state => state.cart);
     const removeFromCart = useCartStore(state => state.removeFromCart);
     const updateQuantity = useCartStore(state => state.updateQuantity);
     const addToSaveForLater = useCartStore(state => state.addToSaveForLater);
-    const removeFromSaveForLater = useCartStore(state => state.removeFromSaveForLater);
-    const clearSaveForLater = useCartStore(state => state.clearSaveForLater);
-    const moveToCart = useCartStore(state => state.moveToCart);
     
     const totalDistinct = cartItems.length;
     const totalQuantity = cartItems.reduce((s, i) => s + i.quantity, 0);
