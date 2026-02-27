@@ -184,3 +184,7 @@ Built by **Akshay Sarkar** as a comprehensive learning project for modern web de
 ---
 
 **License:** MIT
+
+Screenshots
+<img width="971" height="986" alt="image" src="https://github.com/user-attachments/assets/1f6c41f8-1367-45fb-ab94-97b6784e3cb9" />
+
