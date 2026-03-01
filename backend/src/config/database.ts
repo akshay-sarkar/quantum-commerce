@@ -7,7 +7,7 @@ export const connectDB = async () => {
     try {
         const mongoURI = process.env.MONGODB_URI;
         if (!mongoURI) {
-            throw new Error('MOngoDB_URI is not defined in .env file');
+            throw new Error('MONGODB_URI is not defined in .env file');
         }
         await mongoose.connect(mongoURI, {
             dbName: process.env.DB_NAME || 'quantumcommerce'

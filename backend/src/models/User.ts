@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { IAddress } from './Address';
 
 export interface IUser extends Document {
     email: string,
@@ -7,7 +8,7 @@ export interface IUser extends Document {
     lastName: string,
     createdAt: Date,
     userType: string,
-    address: mongoose.Types.ObjectId,
+    address: IAddress,
 }
 
 const UserSchema = new Schema({

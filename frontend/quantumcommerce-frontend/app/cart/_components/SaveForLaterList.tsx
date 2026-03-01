@@ -39,7 +39,7 @@ function SaveForLaterList() {
                                         <button
                                             onClick={() => {
                                                 // add to cart (qty 1) and remove from saved list
-                                                addToCart(item, 1);
+                                                moveToCart(item.id);
                                                 removeFromSaveForLater(item.id);
                                             }}
                                             className="px-4 py-2 bg-qc-accent text-qc-accent-on rounded text-sm font-medium hover:bg-qc-accent-hover transition-colors duration-200"

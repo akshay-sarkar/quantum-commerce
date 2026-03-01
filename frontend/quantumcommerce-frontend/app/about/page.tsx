@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 const techStack = [
   { name: 'Next.js', category: 'Frontend / SSR & SSG' },
   { name: 'TypeScript', category: 'Language' },

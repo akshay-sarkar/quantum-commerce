@@ -17,6 +17,7 @@ interface ICartState {
     clearCart: () => void;
     totalPrice: () => number;
     existingItemQuantity: (productId: string) => number;
+    setCart: (items: ICartItem[]) => void;
 }
 
 const useCartStore = create<ICartState>()(
@@ -72,6 +73,7 @@ const useCartStore = create<ICartState>()(
                 cart: state.cart.filter((item: ICartItem) => item.id !== productId)
             })),
             clearCart: () => set({ cart: [] }),
+            setCart: (items: ICartItem[]) => set({ cart: items }),
             totalPrice: () => get().cart.reduce((total: number, item: ICartItem) => total + (item.price * item.quantity), 0),
             existingItemQuantity: (productId: string) =>  {
                 const existingItem = get().cart.find((item: ICartItem) => item.id === productId);
