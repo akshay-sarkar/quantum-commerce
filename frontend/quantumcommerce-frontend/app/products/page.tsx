@@ -18,8 +18,6 @@ const GET_PRODUCTS = gql`
   }
 `;
 
-
-
 export default function ProductsPage() {
     const { loading, error, data } = useQuery<{ products: IProduct[] }>(GET_PRODUCTS);
 

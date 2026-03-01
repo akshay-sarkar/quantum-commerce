@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CartSyncBridge from "@/components/CartSyncBridge";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ApolloProviderWrapper>
             <AuthProvider>
+              <CartSyncBridge />
               <Navbar />
               <main className="pt-16"> {/* adjust the value to match your nav’s height */}
                 {children}

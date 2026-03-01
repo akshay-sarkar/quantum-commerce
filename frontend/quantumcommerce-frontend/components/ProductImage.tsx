@@ -1,4 +1,3 @@
-import React from 'react';
 import Image from 'next/image';
 import { IProduct } from '@/models';
 
@@ -11,14 +10,14 @@ interface ProductImageProps {
 
 const ProductImage = ({product, imageClass, height, width}: ProductImageProps) => {
     return (
-            <Image
-                src={product.imageUrl}
-                alt={product.name}
-                className={imageClass || "w-full h-48 object-cover"}
-                height={height || 200}
-                width={width || 200}
-                unoptimized />
-    );
+    <Image
+        src={product.imageUrl}
+        alt={product.name}
+        className={imageClass || "w-full h-48 object-cover"}
+        height={height || 200}
+        width={width || 200}
+        unoptimized />
+        );
 };
 
 export default ProductImage;
