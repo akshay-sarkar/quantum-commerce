@@ -13,12 +13,9 @@ async function startServer() {
     const app = express();
     await connectDB();
 
-    // Configure CORS
+    const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
     const corsOptions = {
-        origin: [
-        'http://localhost:3000',              // Your frontend URL
-        'https://studio.apollographql.com'    // Apollo Studio
-        ],
+        origin: allowedOrigins,
         credentials: true, // Required for cookie-based auth
     };
     app.use(cors(corsOptions));

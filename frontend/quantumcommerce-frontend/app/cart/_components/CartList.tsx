@@ -2,20 +2,30 @@
 
 import ProductImage from '@/components/ProductImage';   
 import useCartStore from '@/stores/cartStore';  
+import { useMemo, useCallback } from 'react';
 
 function CartList() {
 
-    const cartItems = useCartStore(state => state.cart.items) ?? [];
+    const cart = useCartStore(state => state.cart);
+    const cartItems = useMemo(() => cart.items ?? [], [cart.items]);
     const removeFromCart = useCartStore(state => state.removeFromCart);
     const updateQuantity = useCartStore(state => state.updateQuantity);
     const addToSaveForLater = useCartStore(state => state.addToSaveForLater);
     
-    const totalDistinct = cartItems.length;
-    const totalQuantity = cartItems.reduce((s, i) => s + i.quantity, 0);
-    const totalPrice = cartItems.reduce(
+    const totalDistinct = useMemo(() => cartItems.length, [cartItems]);
+    
+    const totalQuantity = useMemo(() => cartItems.reduce((s, i) => s + i.quantity, 0), [cartItems]);
+    
+    const totalPrice = useMemo(() => cartItems.reduce(
         (s, i) => s + i.product.price * i.quantity,
         0
-    );
+    ), [cartItems]);
+
+    const handleQuantityChange = useCallback((productId: string, value: string) => {
+        let v = parseInt(value || '1', 10);
+        if (Number.isNaN(v) || v < 1) v = 1;
+        updateQuantity(productId, v);
+    }, [updateQuantity]);
 
     return (
                             <div className="bg-qc-surface shadow-sm rounded-md overflow-hidden">
@@ -51,13 +61,9 @@ function CartList() {
                                                 type="number"
                                                 min={1}
                                                 value={item.quantity}
-                                                onChange={(e) => {
-                                                    let v = parseInt(e.target.value || '1', 10);
-                                                    if (Number.isNaN(v) || v < 1) v = 1;
-                                                    updateQuantity(item.product.id, v);
-                                                }}
+                                                onChange={(e) => handleQuantityChange(item.product.id, e.target.value)}
                                                 className="w-20 bg-transparent border border-qc-border text-qc-text rounded px-2 py-1"
-                                                aria-label='Increase Quantity'
+                                                aria-label="Quantity"
                                             />
 
                                             <button

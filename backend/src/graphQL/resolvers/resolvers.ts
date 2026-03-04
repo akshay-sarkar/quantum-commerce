@@ -56,6 +56,29 @@ const resolvers = {
       register: async (parent: any, { input }: any) => {
           const { email, password, firstName, lastName } = input;
 
+          // Validate input
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+              throw new Error('Invalid email format');
+          }
+
+          if (!firstName || firstName.trim() === '') {
+              throw new Error('First name is required');
+          }
+
+          if (!lastName || lastName.trim() === '') {
+              throw new Error('Last name is required');
+          }
+
+          if (password.length < 6) {
+              throw new Error('Password must be at least 6 characters long');
+          }
+
+          // Password complexity: at least one letter and one number
+          if (!/^(?=.*[a-zA-Z])(?=.*[0-9])/.test(password)) {
+              throw new Error('Password must contain at least one letter and one number');
+          }
+
           // Check if the user already exists
           const existingUser = await UserModel.findOne({ email });
           if (existingUser) {
@@ -105,140 +128,6 @@ const resolvers = {
               user
           };
       },
-
-      // addToCart: async (parent: any, { productId, quantity }: any, context: any) => {
-      //     if (!context.user) {
-      //         throw new Error('Not Authorized');
-      //     }
-      //     //Validate Quantity
-      //     if (quantity <= 0) {
-      //         throw new Error('Quantity needs to be greater than 0');
-      //     }
-
-      //     // Check if product exist and has enough inventory
-      //     const product = await ProductModel.findById(productId);
-      //     if (!product) {
-      //         throw new Error('Product not found');
-      //     }
-
-      //     if (product.inventory < quantity) {
-      //         throw new Error(`Only ${product.inventory} items available in stock`);
-      //     }
-
-      //     // Find or create cart
-      //     let cart = await CartModel.findOne({ userId: context.user.userId });
-      //     if (!cart) {
-      //         cart = await CartModel.create({ userId: context.user.userId, items: [] });
-      //     }
-
-      //     // Check if product already in cart
-      //     const existingItemIndex = cart.items.findIndex(
-      //         item => item.productId.toString() === productId
-      //     );
-
-      //     if (existingItemIndex > -1) {
-      //         // Update existing item quantity
-      //         const newQuantity = cart.items[existingItemIndex].quantity + quantity;
-
-      //         // Check if new quantity exceeds inventory
-      //         if (newQuantity > product.inventory) {
-      //             throw new Error(`Cannot add ${quantity} more. Only ${product.inventory - cart.items[existingItemIndex].quantity} more available`);
-      //         }
-
-      //         cart.items[existingItemIndex].quantity = newQuantity;
-      //     } else {
-      //         // Add new item to cart
-      //         cart.items.push({ productId, quantity });
-      //     }
-
-      //     cart.updatedAt = new Date();
-      //     await cart.save();
-
-      //     // Puplulate product details before retunrning
-      //     await cart.populate('items.productId');
-      //     return cart;
-      // },
-
-      // updateCartItem: async (parent: any, { productId, quantity }: any, context: any) => {
-
-      //     if (!context.user) {
-      //         throw new Error('Not authenticated');
-      //     }
-
-      //     if (quantity <= 0) {
-      //         throw new Error('Quantity must be greater than 0');
-      //     }
-
-      //     const cart = await CartModel.findOne({ userId: context.user.userId });
-      //     if (!cart) {
-      //         throw new Error('Cart not found');
-      //     }
-
-      //     // Check inventory
-      //     const product = await ProductModel.findById(productId);
-      //     if (!product) {
-      //         throw new Error('Product not found');
-      //     }
-
-      //     if (product.inventory < quantity) {
-      //         throw new Error(`Only ${product.inventory} items available`);
-      //     }
-
-      //     // Find and update item
-      //     const itemIndex = cart.items.findIndex(
-      //         item => item.productId.toString() === productId
-      //     );
-
-      //     if (itemIndex === -1) {
-      //         throw new Error('Product not in cart');
-      //     }
-
-      //     cart.items[itemIndex].quantity = quantity;
-      //     cart.updatedAt = new Date();
-      //     await cart.save();
-
-      //     await cart.populate('items.productId');
-      //     return cart;
-      // },
-
-      // removeFromCart: async (parent: any, { productId }: any, context: any) => {
-      //     if (!context.user) {
-      //         throw new Error('Not authenticated');
-      //     }
-
-      //     const cart = await CartModel.findOne({ userId: context.user.userId });
-      //     if (!cart) {
-      //         throw new Error('Cart not found');
-      //     }
-
-      //     // Remove item
-      //     cart.items = cart.items.filter(
-      //         item => item.productId.toString() !== productId
-      //     );
-
-      //     cart.updatedAt = new Date();
-      //     await cart.save();
-
-      //     await cart.populate('items.productId');
-      //     return cart;
-      // },
-
-      // clearCart: async (parent: any, __: any, context: any) => {
-      //     if (!context.user) {
-      //         throw new Error('Not authenticated');
-      //     }
-
-      //     const cart = await CartModel.findOne({ userId: context.user.userId });
-      //     if (!cart) {
-      //         throw new Error('Cart not found');
-      //     }
-
-      //     cart.items = [];
-      //     cart.updatedAt = new Date();
-      //     await cart.save();
-
-      //     return cart;
-      // },
       
       syncCart: async (parent: any, { input }: any, context: any) => {
           // Check if user is authenticated
@@ -273,45 +162,11 @@ const resolvers = {
       id: (parent: any) => parent.id || parent._id?.toString(),
   },
   Cart: {
-      // itemCount: (parent: any) => {
-      //     if (typeof parent.itemCount === 'number') {
-      //         return parent.itemCount;
-      //     }
-      //     return parent.items.reduce((total: number, item: any) => total + item.quantity, 0);
-      // },
-      // subtotal: (parent: any) => {
-      //     if (typeof parent.subtotal === 'number') {
-      //         return parent.subtotal;
-      //     }
-      //     return parent.items.reduce((total: number, item: any) => {
-      //         const price = item.product?.price ?? item.productId?.price ?? 0;
-      //         return total + (price * item.quantity);
-      //     }, 0);
-      // },
       updatedAt: (parent: any) => parent.updatedAt.toISOString()
   },
 
   CartItem: {
       product: (parent: any) => parent.product ?? parent.productId,
-      // productId: (parent: any) => {
-      //     if (typeof parent.productId === 'string') {
-      //         return parent.productId;
-      //     }
-      //     if (parent.product?.id) {
-      //         return parent.product.id;
-      //     }
-      //     if (parent.productId?.id) {
-      //         return parent.productId.id;
-      //     }
-      //     return parent.productId?._id?.toString();
-      // },
-      // itemTotal: (parent: any) => {
-      //     if (typeof parent.itemTotal === 'number') {
-      //         return parent.itemTotal;
-      //     }
-      //     const price = parent.product?.price ?? parent.productId?.price ?? 0;
-      //     return price * parent.quantity;
-      // }
   }
 };
 

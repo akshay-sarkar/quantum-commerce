@@ -8,7 +8,7 @@ export interface IUser extends Document {
     lastName: string,
     createdAt: Date,
     userType: string,
-    address: IAddress,
+    address?: mongoose.Types.ObjectId | IAddress | null,
 }
 
 const UserSchema = new Schema({

@@ -35,8 +35,8 @@ export default function LoginPage() {
             // Redirect to products page after successful login/signup
             router.push('/products');
         } catch (err: unknown) {
-            const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
-            setError(errorMessage);
+            console.error('Authentication request failed', err);
+            setError('Authentication failed. Please check your credentials and try again.');
         } finally {
             setLoading(false);
         }
