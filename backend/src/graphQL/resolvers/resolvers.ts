@@ -25,45 +25,6 @@ const findProductByIdentifier = async (identifier: unknown) => {
     return ProductModel.findById(value);
 };
 
-const buildCartResponse = async (cart: any) => {
-    const cartItems = await Promise.all(
-        cart.items.map(async (item: any) => {
-            const rawProductId =
-                typeof item.productId === 'object' && item.productId !== null
-                    ? (item.productId.id ?? item.productId._id?.toString())
-                    : item.productId;
-
-            try {
-                const product = await findProductByIdentifier(rawProductId);
-                if (!product) return null;
-
-                return {
-                    productId: product.id ?? product._id.toString(),
-                    product,
-                    quantity: item.quantity,
-                    itemTotal: product.price * item.quantity
-                };
-            } catch (e) {
-                console.error(`Error loading product ${rawProductId}:`, e);
-                return null;
-            }
-        })
-    );
-
-    const validItems = cartItems.filter((item: any) => item !== null);
-    const itemCount = validItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
-    const subtotal = validItems.reduce((sum: number, item: any) => sum + item.itemTotal, 0);
-
-    return {
-        id: cart._id,
-        userId: cart.userId,
-        items: validItems,
-        itemCount,
-        subtotal,
-        updatedAt: cart.updatedAt
-    };
-};
-
 const resolvers = {
   Query: {
       hello: () => "Hello World",
@@ -88,12 +49,7 @@ const resolvers = {
           if (!context.user) {
               throw new Error('Not Authenticated');
           }
-          const cart = await CartModel.findOne({ userId: context.user.userId });
-          if (!cart) return null;
-
-          let response = await buildCartResponse(cart);
-          console.log('Built cart response:', response);
-          return response;
+          return await CartModel.findOne({ userId: context.user.userId }).populate('items.product');
       }
   },
   Mutation: {
@@ -291,10 +247,21 @@ const resolvers = {
           }
           const { items } = input;
 
+          const dbItems = await Promise.all(items.map(async (item: any) => {
+              const product = await findProductByIdentifier(item.productId);
+              if (!product) {
+                  throw new Error(`Product not found: ${item.productId}`);
+              }
+              return {
+                  product: product._id,
+                  quantity: item.quantity
+              };
+          }));
+
           //Fetch User Id and Cart
           const userId = context.user.userId;
-          const cart = await CartModel.findOneAndUpdate({ userId }, { items, updatedAt: new Date() }, { upsert: true, new: true });
-          return buildCartResponse(cart);
+          const cart = await CartModel.findOneAndUpdate({ userId }, { items: dbItems, updatedAt: new Date() }, { upsert: true, new: true }).populate('items.product');
+          return cart;
       }
   },
   //-- Resolvers
@@ -302,47 +269,49 @@ const resolvers = {
       id: (parent: any) => parent._id,
       createdAt: (parent: any) => parent.createdAt.toISOString(),
   },
+  Product: {
+      id: (parent: any) => parent.id || parent._id?.toString(),
+  },
   Cart: {
-      id: (parent: any) => parent.id ?? parent._id,
-      itemCount: (parent: any) => {
-          if (typeof parent.itemCount === 'number') {
-              return parent.itemCount;
-          }
-          return parent.items.reduce((total: number, item: any) => total + item.quantity, 0);
-      },
-      subtotal: (parent: any) => {
-          if (typeof parent.subtotal === 'number') {
-              return parent.subtotal;
-          }
-          return parent.items.reduce((total: number, item: any) => {
-              const price = item.product?.price ?? item.productId?.price ?? 0;
-              return total + (price * item.quantity);
-          }, 0);
-      },
+      // itemCount: (parent: any) => {
+      //     if (typeof parent.itemCount === 'number') {
+      //         return parent.itemCount;
+      //     }
+      //     return parent.items.reduce((total: number, item: any) => total + item.quantity, 0);
+      // },
+      // subtotal: (parent: any) => {
+      //     if (typeof parent.subtotal === 'number') {
+      //         return parent.subtotal;
+      //     }
+      //     return parent.items.reduce((total: number, item: any) => {
+      //         const price = item.product?.price ?? item.productId?.price ?? 0;
+      //         return total + (price * item.quantity);
+      //     }, 0);
+      // },
       updatedAt: (parent: any) => parent.updatedAt.toISOString()
   },
 
   CartItem: {
       product: (parent: any) => parent.product ?? parent.productId,
-      productId: (parent: any) => {
-          if (typeof parent.productId === 'string') {
-              return parent.productId;
-          }
-          if (parent.product?.id) {
-              return parent.product.id;
-          }
-          if (parent.productId?.id) {
-              return parent.productId.id;
-          }
-          return parent.productId?._id?.toString();
-      },
-      itemTotal: (parent: any) => {
-          if (typeof parent.itemTotal === 'number') {
-              return parent.itemTotal;
-          }
-          const price = parent.product?.price ?? parent.productId?.price ?? 0;
-          return price * parent.quantity;
-      }
+      // productId: (parent: any) => {
+      //     if (typeof parent.productId === 'string') {
+      //         return parent.productId;
+      //     }
+      //     if (parent.product?.id) {
+      //         return parent.product.id;
+      //     }
+      //     if (parent.productId?.id) {
+      //         return parent.productId.id;
+      //     }
+      //     return parent.productId?._id?.toString();
+      // },
+      // itemTotal: (parent: any) => {
+      //     if (typeof parent.itemTotal === 'number') {
+      //         return parent.itemTotal;
+      //     }
+      //     const price = parent.product?.price ?? parent.productId?.price ?? 0;
+      //     return price * parent.quantity;
+      // }
   }
 };
 

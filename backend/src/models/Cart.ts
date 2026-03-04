@@ -1,8 +1,9 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { IProduct } from './Product';
 
 export interface ICartItem {
-    productId: string,
-    quantity: number,
+    product: mongoose.Types.ObjectId | IProduct,
+    quantity: number
 }
 
 export interface ICart extends Document {
@@ -19,14 +20,15 @@ const CartSchema = new Schema({
         unique: true
     },
     items: [{
-        productId: {
-            type: String,
+        product: {
+            type: Schema.Types.ObjectId,
             ref: 'Product',
             required: true
         },
         quantity: {
             type: Number,
             required: true,
+            default: 1,
             min: 1
         }
     }],

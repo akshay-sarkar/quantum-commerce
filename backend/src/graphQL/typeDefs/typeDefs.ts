@@ -56,15 +56,11 @@ const typeDefs = `
         id: ID!,
         userId: ID!,
         items: [CartItem!]!,
-        itemCount: Int!,
-        subtotal: Float!
         updatedAt: String!
     }
     type CartItem {
         product: Product!,
-        productId: ID!,
         quantity: Int!,
-        itemTotal: Float!
     }
     
     input RegisterInput {

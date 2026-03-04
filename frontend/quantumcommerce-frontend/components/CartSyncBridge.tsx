@@ -5,6 +5,8 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useAuth } from '@/contexts/AuthContext';
 import useCartStore from '@/stores/cartStore';
 import { useEffect, useMemo, useRef } from 'react';
+import { ICart, ICartItem } from '@/models';
+import { c } from '@apollo/client/react/internal/compiler-runtime';
 
 const SYNC_CART_MUTATION = gql`
     mutation SyncCart($items: [SyncCartItemInput!]!) {
@@ -15,9 +17,21 @@ const SYNC_CART_MUTATION = gql`
     }
 `;
 
+interface GetMyCartResponse {
+    myCart: {
+        items: ICartItem[];
+        id: string;
+        updatedAt: string;
+        userId: string;
+    };
+}
+
 const GET_MY_CART = gql`
     query GetMyCart {
         myCart {
+            id
+            userId
+            updatedAt
             items {
                 quantity
                 product {
@@ -33,54 +47,47 @@ const GET_MY_CART = gql`
     }
 `;
 
-const DEBOUNCE_MS = 700;
+const DEBOUNCE_MS = 5000;
 
 export default function CartSyncBridge() {
     const { isAuthenticated } = useAuth();
     const cart = useCartStore((state) => state.cart);
     const setCart = useCartStore((state) => state.setCart);
     const [syncCart] = useMutation(SYNC_CART_MUTATION);
-
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isInitialLoadDone = useRef(false);
 
-    const {loading, error, data} = useQuery(GET_MY_CART, {
+    const {loading, error, data} = useQuery<GetMyCartResponse>(GET_MY_CART, {
         skip: !isAuthenticated,
         fetchPolicy: 'network-only'
     });
 
     useEffect(() => {
-      isInitialLoadDone.current = true;
+        if (isInitialLoadDone.current) {
+            return;
+        }
         if (loading) {
             console.log('Loading cart data...');
+            return;
         }
         if (error) {
             console.error('Error fetching cart:', error);
+            isInitialLoadDone.current = true;
         }
-        if (data) {
+        if (data?.myCart) {
           console.log('Fetched cart data:', data);
-          const product = [];
-          //setCart(data?.myCart?.items ?? []);
-          for (const item of data?.myCart?.items ?? []) {
-            product.push({
-              ...item.product,
-              quantity: item.quantity
-            });
-          }
-          setCart(product);
+          setCart(data.myCart);
+          isInitialLoadDone.current = true;
         }
+    }, [loading, error, data, setCart]);
 
-        return () => {
-            isInitialLoadDone.current = false;
-        };
-    }, [loading, error, data]);
 
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const snapshot = useMemo(
         () =>
             JSON.stringify(
-                cart
-                    .map((item) => ({
-                        productId: item.id,
+                cart?.items
+                    ?.map((item) => ({
+                        productId: item.product.id,
                         quantity: item.quantity,
                     }))
                     .sort((a, b) => a.productId.localeCompare(b.productId)),
