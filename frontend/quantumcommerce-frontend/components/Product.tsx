@@ -25,21 +25,27 @@ function Product(product: IProduct) {
                 {product.description}
             </p>
             <div className="flex justify-between items-center">
-                <span className="text-xl font-bold text-qc-accent">
-                    ${product.price}
-                </span>
-                <span className="text-xl font-bold text-qc-accent">
-                    {existingItemQuantity > 0 ? `In Cart: ${existingItemQuantity}` : ''}
-                </span>
-                <button 
-                    onClick={() => existingItemQuantity > 0 ? removeFromCart(product.id) : addToCart(product)}
-                    className="px-4 py-2 bg-qc-accent text-qc-accent-on text-sm font-medium rounded hover:bg-qc-accent-hover transition-colors duration-300">
-                    {existingItemQuantity > 0 ? "Remove from Cart" : "Add to Cart"}
-                </button>
+                <div className="flex flex-col items-start gap-1">
+                    <span className="text-xl font-bold text-qc-accent">
+                        ${product.price}
+                    </span>
+                    <p className="text-xs text-qc-muted">
+                        Category: {product.category}
+                    </p>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                    {existingItemQuantity > 0 && (
+                        <span className="text-sm font-bold text-qc-accent">
+                            In Cart: {existingItemQuantity}
+                        </span>
+                    )}
+                    <button 
+                        onClick={() => existingItemQuantity > 0 ? removeFromCart(product.id) : addToCart(product)}
+                        className="px-4 py-2 bg-qc-accent text-qc-accent-on text-sm font-medium rounded hover:bg-qc-accent-hover transition-colors duration-300">
+                        {existingItemQuantity > 0 ? "Remove from Cart" : "Add to Cart"}
+                    </button>
+                </div>
             </div>
-            <p className="text-xs text-qc-muted mt-2">
-                Category: {product.category}
-            </p>
         </div>
     </div>;
 }

@@ -17,16 +17,23 @@ export interface IUser {
     userType: string;
 }
 
-export interface ICartItem extends IProduct {
+export interface IAddress{
+    userId: IUser["id"];
+    street: string,
+    city: string,
+    state: string,
+    zip: string,
+    country: string
+}
+
+export interface ICartItem {
+    product: IProduct;
     quantity: number;
 }
 
 export interface ICart {
     id: string;
+    userId: IUser["id"];
     items: ICartItem[];
-    itemCount: number;
-    subtotal: number;
     updatedAt: string;
-    isSycing?: boolean;
-    syncError?: string;
 }

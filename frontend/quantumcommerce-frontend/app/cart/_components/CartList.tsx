@@ -2,44 +2,54 @@
 
 import ProductImage from '@/components/ProductImage';   
 import useCartStore from '@/stores/cartStore';  
+import { useMemo, useCallback } from 'react';
 
 function CartList() {
 
-    const cartItems = useCartStore(state => state.cart);
+    const cart = useCartStore(state => state.cart);
+    const cartItems = useMemo(() => cart.items ?? [], [cart.items]);
     const removeFromCart = useCartStore(state => state.removeFromCart);
     const updateQuantity = useCartStore(state => state.updateQuantity);
     const addToSaveForLater = useCartStore(state => state.addToSaveForLater);
     
-    const totalDistinct = cartItems.length;
-    const totalQuantity = cartItems.reduce((s, i) => s + i.quantity, 0);
-    const totalPrice = cartItems.reduce(
-        (s, i) => s + i.price * i.quantity,
+    const totalDistinct = useMemo(() => cartItems.length, [cartItems]);
+    
+    const totalQuantity = useMemo(() => cartItems.reduce((s, i) => s + i.quantity, 0), [cartItems]);
+    
+    const totalPrice = useMemo(() => cartItems.reduce(
+        (s, i) => s + i.product.price * i.quantity,
         0
-    );
+    ), [cartItems]);
+
+    const handleQuantityChange = useCallback((productId: string, value: string) => {
+        let v = parseInt(value || '1', 10);
+        if (Number.isNaN(v) || v < 1) v = 1;
+        updateQuantity(productId, v);
+    }, [updateQuantity]);
 
     return (
                             <div className="bg-qc-surface shadow-sm rounded-md overflow-hidden">
                         <ul>
-                            {cartItems.map((item) => (
+                            {cartItems && cartItems.map((item) => (
                                 <li
-                                    key={item.id}
+                                    key={item.product.id}
                                     className="flex gap-4 p-4 border-b border-qc-border last:border-b-0 items-center"
                                 >
                                     <ProductImage
-                                        product={item}
+                                        product={item.product}
                                         imageClass="w-24 h-24 object-cover rounded"
                                     />
 
                                     {/* Left: name/desc/unit price */}
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-qc-text">
-                                            {item.name}
+                                            {item.product.name}
                                         </h3>
                                         <p className="text-sm text-qc-muted">
-                                            {item.description}
+                                            {item.product.description}
                                         </p>
                                         <div className="text-sm text-qc-muted mt-2">
-                                            Unit: <span className="font-medium text-qc-text">${item.price.toFixed(2)}</span>
+                                            Unit: <span className="font-medium text-qc-text">${item.product.price.toFixed(2)}</span>
                                         </div>
                                     </div>
 
@@ -51,37 +61,36 @@ function CartList() {
                                                 type="number"
                                                 min={1}
                                                 value={item.quantity}
-                                                onChange={(e) => {
-                                                    let v = parseInt(e.target.value || '1', 10);
-                                                    if (Number.isNaN(v) || v < 1) v = 1;
-                                                    updateQuantity(item.id, v);
-                                                }}
+                                                onChange={(e) => handleQuantityChange(item.product.id, e.target.value)}
                                                 className="w-20 bg-transparent border border-qc-border text-qc-text rounded px-2 py-1"
+                                                aria-label="Quantity"
                                             />
 
                                             <button
-                                                onClick={() => removeFromCart(item.id)}
-                                                className="px-3 py-1 text-sm border border-qc-accent text-qc-accent rounded hover:bg-qc-accent hover:text-qc-accent-on transition-colors duration-200"
-                                                aria-label={`Remove ${item.name}`}
+                                                onClick={() => removeFromCart(item.product.id)}
+                                                className="px-3 py-1 text-sm border border-qc-accent text-qc-accent-on rounded bg-qc-accent hover:bg-qc-accent-hover transition-colors duration-200"
+                                                aria-label={`Remove ${item.product.name} from cart`}
                                             >
                                                 Remove
                                             </button>
-                                        </div>
 
-                                        <button
-                                            onClick={() => {
-                                                // Simple save-for-later: remove from cart for now
-                                                addToSaveForLater(item);
-                                            }}
-                                            className="text-sm text-qc-muted underline"
-                                        >
-                                            Save for later
-                                        </button>
+                                            <button
+                                                onClick={() => {
+                                                    // Simple save-for-later: remove from cart for now
+                                                    addToSaveForLater(item);
+                                                }}
+                                                className="px-3 py-1 text-sm border border-qc-accent text-qc-accent rounded hover:bg-qc-accent hover:text-qc-accent-on transition-colors duration-200"
+                                                aria-label={`Save ${item.product.name} for later`}
+                                            >
+                                                Save for later
+                                            </button>
+                                        </div>
                                     </div>
+                                    
 
                                     {/* Right: item total */}
                                     <div className="text-sm font-semibold text-qc-text">
-                                        ${(item.price * item.quantity).toFixed(2)}
+                                        ${(item.product.price * item.quantity).toFixed(2)}
                                     </div>
                                 </li>
                             ))}

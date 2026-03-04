@@ -1,10 +1,16 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { IUser } from '../models/User';
 
 const JWT_SECRET =
     process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '5d';
+
+type AuthTokenPayload = JwtPayload & {
+    userId: string;
+    email: string;
+    userType: string;
+};
 
 // Generate JWT Token
 export const generateToken = (user: IUser): string => {
@@ -22,12 +28,12 @@ export const generateToken = (user: IUser): string => {
 };
 
 // Verify JWT Token
-export const verifyToken = (token: string): any => {
-    try {
-        return jwt.verify(token, JWT_SECRET);
-    } catch (error) {
-        throw new Error('Invalid or expired token');
-    }
+export const verifyToken = (token: string): AuthTokenPayload => {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (typeof decoded === 'string' || !decoded.userId) {
+       throw new Error('Invalid token payload');
+   }
+    return decoded as AuthTokenPayload;
 };
 
 // Hash Passsword

@@ -1,7 +1,7 @@
 'use client';
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 // Mutation
 const LOGIN_MUTATION = gql`

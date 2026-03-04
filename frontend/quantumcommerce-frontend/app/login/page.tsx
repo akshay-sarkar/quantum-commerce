@@ -34,8 +34,9 @@ export default function LoginPage() {
 
             // Redirect to products page after successful login/signup
             router.push('/products');
-        } catch (err: any) {
-            setError(err.message || 'Authentication failed');
+        } catch (err: unknown) {
+            console.error('Authentication request failed', err);
+            setError('Authentication failed. Please check your credentials and try again.');
         } finally {
             setLoading(false);
         }

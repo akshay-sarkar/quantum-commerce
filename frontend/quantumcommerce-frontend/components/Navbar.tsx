@@ -8,7 +8,7 @@ import Link from 'next/link';
 export default function Navbar() {
     const { user, isAuthenticated, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
-    const cartCount = useCartStore(state => state.cart.length);
+    const cartCount = useCartStore(state => state.cart.items?.length || 0);
 
 
     return (
