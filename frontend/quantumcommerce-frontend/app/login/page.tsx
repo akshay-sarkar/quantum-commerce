@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import GoogleLoginButton from '@/components/GoogleLoginButton';
 
 const inputClasses =
     'w-full bg-transparent border border-qc-border text-qc-text placeholder-qc-placeholder px-4 py-3 text-sm tracking-wide focus:border-qc-accent focus:outline-none transition-colors duration-300';
@@ -56,6 +57,7 @@ export default function LoginPage() {
                     >
                         Quantum Commerce
                     </Link>
+
                     <h2
                         className="font-display mt-6 tracking-[-0.02em] text-qc-text"
                         style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}
@@ -67,6 +69,7 @@ export default function LoginPage() {
                             ? 'Welcome back to Quantum Commerce'
                             : 'Join the future of commerce'}
                     </p>
+                    <GoogleLoginButton />
                 </div>
 
                 {/* Form */}

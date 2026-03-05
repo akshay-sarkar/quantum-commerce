@@ -7,10 +7,12 @@ const typeDefs = `
         me: User,
         myCart: Cart
     }
+
     type Mutation {
         register(input: RegisterInput!): AuthPayload!
         login(input: LoginInput!): AuthPayload!
         syncCart(input: SyncCartInput!): Cart!
+        loginWithGoogle(idToken: String!): AuthPayload!
     }
     
     

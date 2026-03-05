@@ -1,20 +1,11 @@
 'use client';
 
-import { gql } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useAuth } from '@/contexts/AuthContext';
 import useCartStore from '@/stores/cartStore';
 import { useEffect, useMemo, useRef, useCallback } from 'react';
 import { ICartItem } from '@/models';
-
-const SYNC_CART_MUTATION = gql`
-    mutation SyncCart($items: [SyncCartItemInput!]!) {
-        syncCart(input: { items: $items }) {
-            id
-            updatedAt
-        }
-    }
-`;
+import { GET_MY_CART, SYNC_CART_MUTATION } from '@/graphql/gql';
 
 interface GetMyCartResponse {
     myCart: {
@@ -25,26 +16,6 @@ interface GetMyCartResponse {
     };
 }
 
-const GET_MY_CART = gql`
-    query GetMyCart {
-        myCart {
-            id
-            userId
-            updatedAt
-            items {
-                quantity
-                product {
-                    id
-                    name
-                    description
-                    price
-                    category
-                    imageUrl
-                }
-            }
-        }
-    }
-`;
 
 const DEBOUNCE_MS = 700;
 

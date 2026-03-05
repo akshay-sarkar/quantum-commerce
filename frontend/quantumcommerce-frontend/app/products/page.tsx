@@ -1,22 +1,10 @@
 'use client';
-import { gql } from '@apollo/client';
+
 import { useQuery } from '@apollo/client/react';
 import Product from '@/components/Product';
 import { IProduct } from '@/models';
+import { GET_PRODUCTS } from '@/graphql/gql';
 
-const GET_PRODUCTS = gql`
-  query GetProducts {
-    products {
-      id
-      name
-      price
-      description
-      category
-      inventory
-      imageUrl
-    }
-  }
-`;
 
 export default function ProductsPage() {
     const { loading, error, data } = useQuery<{ products: IProduct[] }>(GET_PRODUCTS);

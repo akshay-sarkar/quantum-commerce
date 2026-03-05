@@ -37,3 +37,37 @@ export interface ICart {
     items: ICartItem[];
     updatedAt: string;
 }
+
+// interface User {
+//     id: string;
+//     email: string;
+//     firstName: string;
+//     lastName: string;
+// }
+
+// Response Types
+
+export interface IUserResponse {
+    token: string,
+    user: IUser
+}
+
+export interface ILoginResponse {
+    login: IUserResponse
+}
+
+export interface IRegisterResponse {
+    register: IUserResponse
+}
+
+// Context Creation
+export interface AuthContextType {
+    user: IUser | null;
+    token: string | null;
+    isAuthenticated: boolean;
+    login: (email: string, password: string) => Promise<void>;
+    signup: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
+    logout: () => void;
+    setToken: (token: string | null) => void;
+    setUser: (user: IUser | null) => void;
+}

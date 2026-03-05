@@ -1,71 +1,13 @@
 'use client';
-import { gql } from '@apollo/client';
+import { LOGIN_MUTATION, REGISTER_MUTATION } from '@/graphql/gql';
 import { useMutation } from '@apollo/client/react';
 import { createContext, useContext, useState, ReactNode } from 'react';
-
-// Mutation
-const LOGIN_MUTATION = gql`
-    mutation Login($input: LoginInput!){
-        login(input: $input) {
-            token
-            user {
-                id
-                email
-                firstName
-                lastName
-            }
-        }
-    }
-`;
-
-const REGISTER_MUTATION = gql`
-  mutation Register($input: RegisterInput!) {
-    register(input: $input) {
-      token
-      user {
-        id
-        email
-        firstName
-        lastName
-      }
-    }
-  }
-`;
-
-// Context Creation
-interface User {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-}
-
-interface UserResponse {
-    token: string,
-    user: User
-}
-
-interface LoginResponse {
-    login: UserResponse
-}
-
-interface RegisterResponse {
-    register: UserResponse
-}
-
-interface AuthContextType {
-    user: User | null;
-    token: string | null;
-    isAuthenticated: boolean;
-    login: (email: string, password: string) => Promise<void>;
-    signup: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
-    logout: () => void;
-}
+import { IUser, ILoginResponse, IRegisterResponse, AuthContextType } from '@/models';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(() => {
+    const [user, setUser] = useState<IUser | null>(() => {
         if (typeof window === 'undefined') return null;
         const savedUser = sessionStorage.getItem('user');
         if (!savedUser) return null;
@@ -80,8 +22,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (typeof window === 'undefined') return null;
         return sessionStorage.getItem('token');
     });
-    const [loginMutation] = useMutation<LoginResponse>(LOGIN_MUTATION);
-    const [registerMutation] = useMutation<RegisterResponse>(REGISTER_MUTATION);
+    const [loginMutation] = useMutation<ILoginResponse>(LOGIN_MUTATION);
+    const [registerMutation] = useMutation<IRegisterResponse>(REGISTER_MUTATION);
 
     // login call
     const login = async (email: string, password: string) => {
@@ -136,7 +78,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         login,
         signup,
-        logout
+        logout,
+        setToken,
+        setUser
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

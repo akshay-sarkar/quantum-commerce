@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartSyncBridge from "@/components/CartSyncBridge";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log("Rendering RootLayout", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <body
@@ -42,14 +44,16 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <ApolloProviderWrapper>
+          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
             <AuthProvider>
               <CartSyncBridge />
               <Navbar />
-              <main className="pt-16"> {/* adjust the value to match your nav’s height */}
+              <main className="pt-16">
                 {children}
               </main>
               <Footer />
             </AuthProvider>
+            </GoogleOAuthProvider>
           </ApolloProviderWrapper>
         </ThemeProvider>
       </body>
