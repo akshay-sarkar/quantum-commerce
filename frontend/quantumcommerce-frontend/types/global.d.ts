@@ -1,7 +1,11 @@
 declare module '@react-oauth/google' {
-  // you can add specific exports here if you want, otherwise `any` is fine
-  export const GoogleOAuthProvider: any;
-  export const GoogleLogin: any;
-  export const useGoogleLogin: any;
+  import type { FC } from 'react';
+  // basic React component types with unknown props to avoid `any` lint errors
+  export const GoogleOAuthProvider: FC<unknown>;
+  export const GoogleLogin: FC<unknown>;
+  export type CredentialResponse = {
+    credential: string;
+    select_by: string;
+  };
   // …etc
 }

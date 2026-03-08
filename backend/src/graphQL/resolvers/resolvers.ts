@@ -5,7 +5,8 @@ import { comparePassword, generateToken, hashPassword } from '../../utils/auth';
 import mongoose from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID?.trim();
+const JWT_SECRET = process.env.JWT_SECRET?.trim();
 
 const findProductByIdentifier = async (identifier: unknown) => {
   if (identifier === null || identifier === undefined) {
@@ -172,10 +173,17 @@ const resolvers = {
       }
       const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-      const ticket = await client.verifyIdToken({
-        idToken,
-        audience: GOOGLE_CLIENT_ID,
-      });
+      let ticket;
+      try {
+        ticket = await client.verifyIdToken({
+          idToken,
+          audience: GOOGLE_CLIENT_ID,
+        });
+      } catch (error: any) {
+        console.error('Google verification failed:', error.message);
+        return `Google login failed`;
+      }
+
       const payload = ticket.getPayload();
       // Validate required claims
       if (!payload) {
@@ -203,15 +211,15 @@ const resolvers = {
 
       // Find or create user
       let user = await UserModel.findOne({ email });
-
+      const hashedPassword = await hashPassword(payload?.email ?? '' + JWT_SECRET); // deterministic password for OAuth users
       if (!user) {
         // Create new user for Google OAuth (no password needed)
         user = await UserModel.create({
           email,
-          password: undefined, // OAuth users don't need passwords
+          password: hashedPassword, // Store the deterministic password
           firstName: payload.given_name || '',
           lastName: payload.family_name || '',
-          userType: 'BUYER',
+          userType: 'G_BUYER',
           createdAt: new Date(),
         });
       }

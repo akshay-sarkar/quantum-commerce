@@ -6,6 +6,7 @@ import useCartStore from '@/stores/cartStore';
 import { useEffect, useMemo, useRef, useCallback } from 'react';
 import { ICartItem } from '@/models';
 import { GET_MY_CART, SYNC_CART_MUTATION } from '@/graphql/gql';
+import { c } from '@apollo/client/react/internal/compiler-runtime';
 
 interface GetMyCartResponse {
     myCart: {
@@ -34,6 +35,9 @@ export default function CartSyncBridge() {
     });
 
     const generateSnapshot = useCallback((items: ICartItem[]) => {
+        if (!items || items.length === 0) {
+            return '[]';
+        }
         return JSON.stringify(
             items.map((item) => ({
                 productId: item.product.id,
@@ -43,6 +47,7 @@ export default function CartSyncBridge() {
     }, []);
 
     useEffect(() => {
+        console.log('CartSyncBridge useEffect - loading:', loading, 'error:', error, 'data:', data);
         if (isInitialLoadDone.current) {
             return;
         }
@@ -50,7 +55,7 @@ export default function CartSyncBridge() {
             console.log('Loading cart data...');
             return;
         }
-        if (error) {
+        if (error || data?.myCart === null) {
             console.error('Error fetching cart:', error);
             isInitialLoadDone.current = true;
         }

@@ -23,7 +23,7 @@ const UserSchema = new Schema({
   firstName: { type: String, required: true, trim: true },
   lastName: { type: String, required: true, trim: true },
   createdAt: { type: Date, default: Date.now },
-  userType: { type: String, required: true, enum: ['BUYER', 'ADMIN'] },
+  userType: { type: String, required: true, enum: ['BUYER', 'ADMIN', 'G_BUYER'] },
   address: { type: mongoose.Types.ObjectId, ref: 'Address' },
 });
 

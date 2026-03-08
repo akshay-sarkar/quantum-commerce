@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartSyncBridge from "@/components/CartSyncBridge";
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import GoogleAuthProviderWrapper from "@/providers/GoogleAuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,7 +44,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <ApolloProviderWrapper>
-          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+          <GoogleAuthProviderWrapper>
             <AuthProvider>
               <CartSyncBridge />
               <Navbar />
@@ -53,7 +53,7 @@ export default function RootLayout({
               </main>
               <Footer />
             </AuthProvider>
-            </GoogleOAuthProvider>
+            </GoogleAuthProviderWrapper>
           </ApolloProviderWrapper>
         </ThemeProvider>
       </body>

@@ -38,12 +38,12 @@ export interface ICart {
     updatedAt: string;
 }
 
-// interface User {
-//     id: string;
-//     email: string;
-//     firstName: string;
-//     lastName: string;
-// }
+export interface IGoogleLoginResponse {
+  loginWithGoogle: {
+    token: string;
+    user: IUser;
+  };
+}
 
 // Response Types
 

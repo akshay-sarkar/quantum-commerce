@@ -1,24 +1,26 @@
+'use client';
+
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useMutation } from '@apollo/client/react';
-import { useAuth } from '../contexts/AuthContext'; // your auth context
-import {LOGIN_WITH_GOOGLE} from '@/graphql/gql';
+import { useAuth } from '../contexts/AuthContext';
+import { LOGIN_WITH_GOOGLE } from '@/graphql/gql';
 import { useRouter } from 'next/navigation';
+import {CredentialResponse} from '@react-oauth/google';
+import { IGoogleLoginResponse } from '@/models';
 
 export default function GoogleLoginButton() {
-  const [loginWithGoogle] = useMutation(LOGIN_WITH_GOOGLE);
-  const { setToken, setUser } = useAuth();
+  const [loginWithGoogle, { loading }] = useMutation<IGoogleLoginResponse>(LOGIN_WITH_GOOGLE);
+  const  { setToken, setUser } = useAuth();
   const router = useRouter();
 
-  const handleSuccess = async (res: any) => {
+  const handleSuccess = (res: CredentialResponse | null) => {
+    if (!res?.credential) return; // user closed popup, etc.
     const idToken = res.credential;
-    if (!idToken) return; // user closed popup, etc.
-
-    try {
-      const { data } = await loginWithGoogle({
-        variables: { idToken },
-      });
-
+    
+    loginWithGoogle({
+      variables: { idToken },
+    }).then(({ data }) => {
       if (data?.loginWithGoogle) {
         const { token, user } = data.loginWithGoogle;
 
@@ -31,9 +33,9 @@ export default function GoogleLoginButton() {
 
         router.push('/products');
       }
-    } catch (err) {
+    }).catch((err) => {
       console.error('google login failed', err);
-    }
+    });
   };
 
   const handleError = () => {
@@ -41,11 +43,20 @@ export default function GoogleLoginButton() {
   };
 
   return (
+    loading ? (
+      <div className="w-full flex justify-center py-3">
+        <div className="loader" />
+      </div>
+    ) : (
+    
     <GoogleLogin
+      // @ts-expect-error: GoogleLogin types are missing prop definitions in this version
       onSuccess={handleSuccess}
       onError={handleError}
       size="large"
       theme="outline"
+      shape="rectangular"
     />
+    )
   );
 }

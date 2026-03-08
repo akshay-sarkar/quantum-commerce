@@ -25,6 +25,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loginMutation] = useMutation<ILoginResponse>(LOGIN_MUTATION);
     const [registerMutation] = useMutation<IRegisterResponse>(REGISTER_MUTATION);
 
+    const handleAuthSuccess = (authResponse: { token: string; user: IUser }) => {
+        const { token, user } = authResponse;
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', JSON.stringify(user));
+        setToken(token);
+        setUser(user);
+    };
+
     // login call
     const login = async (email: string, password: string) => {
         const { data } = await loginMutation({
@@ -32,15 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         if (data?.login) {
-            const { token, user } = data.login;
-
-            // Store in sessionStorage
-            sessionStorage.setItem('token', token);
-            sessionStorage.setItem('user', JSON.stringify(user));
-
-            // Update context state
-            setToken(token);
-            setUser(user);
+            handleAuthSuccess(data.login);
         }
     };
 
@@ -50,15 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             variables: { input: { email, password, firstName, lastName } }
         });
         if (data?.register) {
-            const { token, user } = data.register;
-
-            // Store in sessionStorage
-            sessionStorage.setItem('token', token);
-            sessionStorage.setItem('user', JSON.stringify(user));
-
-            // Update context state
-            setToken(token);
-            setUser(user);
+            handleAuthSuccess(data.register);
         }
     };
 
