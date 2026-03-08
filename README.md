@@ -9,7 +9,7 @@ A modern, full-stack e-commerce platform built with cutting-edge web technologie
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **GraphQL Client:** Apollo Client
-- **State Management:** React Context API
+- **State Management:** React Context API, Zustand
 - **Deployment:** Vercel, AWS EC2
 - **Features:** Server Components, Client Components, Protected Routes
 
@@ -19,7 +19,7 @@ A modern, full-stack e-commerce platform built with cutting-edge web technologie
 - **Language:** TypeScript
 - **API:** GraphQL with Apollo Server
 - **Database:** MongoDB Atlas
-- **Authentication:** JWT (JSON Web Tokens)
+- **Authentication:** JWT (JSON Web Tokens), Google Sign-In
 - **Containerization:** Docker
 - **Deployment:** AWS EC2 (Ubuntu)
 - **Domain & SSL:** Cloudflare (Flexible SSL)
@@ -59,11 +59,13 @@ A modern, full-stack e-commerce platform built with cutting-edge web technologie
 - ✅ Docker Containerization
 - ✅ Automated Deployment Scripts
 - ✅ Production-Ready HTTPS Setup
+- ✅ Shopping Cart Functionality and Sync
+- ✅ Google Sign-In Support
 
 ### In Progress
-- 🚧 Shopping Cart Functionality
+- 🚧 Search, Filter on Product Pages
 - 🚧 Rate Limiting for Authentication
-- 🚧 Order Management
+- 🚧 Admin Order Management
 
 ## 🛠️ Local Development
 
@@ -100,6 +102,9 @@ MONGODB_URI=your_mongodb_uri
 DB_NAME=quantumcommerce
 JWT_SECRET=your_jwt_secret
 CORS_ALLOWED_ORIGINS=http://localhost:3000,https://your-vercel-app.vercel.app
+ADMIN_PASSWORD=ADMIN_PASSWORD
+USER_PASSWORD=USER_PASSWORD
+GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID
 ```
 
 Run development server:
