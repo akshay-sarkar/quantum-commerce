@@ -44,15 +44,13 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <ApolloProviderWrapper>
-          <GoogleAuthProviderWrapper>
-            <AuthProvider>
-              <CartSyncBridge />
-              <Navbar />
-              <main className="pt-16">
-                {children}
-              </main>
-              <Footer />
-            </AuthProvider>
+            <GoogleAuthProviderWrapper>
+              <AuthProvider>
+                <CartSyncBridge />
+                <Navbar />
+                <main className="pt-16">{children}</main>
+                <Footer />
+              </AuthProvider>
             </GoogleAuthProviderWrapper>
           </ApolloProviderWrapper>
         </ThemeProvider>

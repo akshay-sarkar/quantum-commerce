@@ -1,41 +1,41 @@
 export interface IProduct {
-    id: string;
-    name: string;
-    price: number;
-    description: string;
-    category: string;
-    inventory: number;
-    imageUrl: string;
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  category: string;
+  inventory: number;
+  imageUrl: string;
 }
 
 export interface IUser {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    createdAt: string;
-    userType: string;
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  createdAt: string;
+  userType: string;
 }
 
-export interface IAddress{
-    userId: IUser["id"];
-    street: string,
-    city: string,
-    state: string,
-    zip: string,
-    country: string
+export interface IAddress {
+  userId: IUser["id"];
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
 }
 
 export interface ICartItem {
-    product: IProduct;
-    quantity: number;
+  product: IProduct;
+  quantity: number;
 }
 
 export interface ICart {
-    id: string;
-    userId: IUser["id"];
-    items: ICartItem[];
-    updatedAt: string;
+  id: string;
+  userId: IUser["id"];
+  items: ICartItem[];
+  updatedAt: string;
 }
 
 export interface IGoogleLoginResponse {
@@ -48,27 +48,32 @@ export interface IGoogleLoginResponse {
 // Response Types
 
 export interface IUserResponse {
-    token: string,
-    user: IUser
+  token: string;
+  user: IUser;
 }
 
 export interface ILoginResponse {
-    login: IUserResponse
+  login: IUserResponse;
 }
 
 export interface IRegisterResponse {
-    register: IUserResponse
+  register: IUserResponse;
 }
 
 // Context Creation
 export interface AuthContextType {
-    user: IUser | null;
-    token: string | null;
-    isAuthenticated: boolean;
-    login: (email: string, password: string) => Promise<void>;
-    signup: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
-    logout: () => void;
-    setToken: (token: string | null) => void;
-    setUser: (user: IUser | null) => void;
-    handleGoogleLogin: (idToken: string) => Promise<void>;
+  user: IUser | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+  ) => Promise<void>;
+  logout: () => void;
+  setToken: (token: string | null) => void;
+  setUser: (user: IUser | null) => void;
+  handleGoogleLogin: (idToken: string) => Promise<void>;
 }

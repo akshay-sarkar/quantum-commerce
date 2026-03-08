@@ -1,114 +1,126 @@
-'use client';
+"use client";
 
-import ProductImage from '@/components/ProductImage';   
-import useCartStore from '@/stores/cartStore';  
-import { useMemo, useCallback } from 'react';
+import ProductImage from "@/components/ProductImage";
+import useCartStore from "@/stores/cartStore";
+import { useMemo, useCallback } from "react";
 
 function CartList() {
+  const cart = useCartStore((state) => state.cart);
+  const cartItems = useMemo(() => cart.items ?? [], [cart.items]);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const addToSaveForLater = useCartStore((state) => state.addToSaveForLater);
 
-    const cart = useCartStore(state => state.cart);
-    const cartItems = useMemo(() => cart.items ?? [], [cart.items]);
-    const removeFromCart = useCartStore(state => state.removeFromCart);
-    const updateQuantity = useCartStore(state => state.updateQuantity);
-    const addToSaveForLater = useCartStore(state => state.addToSaveForLater);
-    
-    const totalDistinct = useMemo(() => cartItems.length, [cartItems]);
-    
-    const totalQuantity = useMemo(() => cartItems.reduce((s, i) => s + i.quantity, 0), [cartItems]);
-    
-    const totalPrice = useMemo(() => cartItems.reduce(
-        (s, i) => s + i.product.price * i.quantity,
-        0
-    ), [cartItems]);
+  const totalDistinct = useMemo(() => cartItems.length, [cartItems]);
 
-    const handleQuantityChange = useCallback((productId: string, value: string) => {
-        let v = parseInt(value || '1', 10);
-        if (Number.isNaN(v) || v < 1) v = 1;
-        updateQuantity(productId, v);
-    }, [updateQuantity]);
+  const totalQuantity = useMemo(
+    () => cartItems.reduce((s, i) => s + i.quantity, 0),
+    [cartItems],
+  );
 
-    return (
-                            <div className="bg-qc-surface shadow-sm rounded-md overflow-hidden">
-                        <ul>
-                            {cartItems && cartItems.map((item) => (
-                                <li
-                                    key={item.product.id}
-                                    className="flex gap-4 p-4 border-b border-qc-border last:border-b-0 items-center"
-                                >
-                                    <ProductImage
-                                        product={item.product}
-                                        imageClass="w-24 h-24 object-cover rounded"
-                                    />
+  const totalPrice = useMemo(
+    () => cartItems.reduce((s, i) => s + i.product.price * i.quantity, 0),
+    [cartItems],
+  );
 
-                                    {/* Left: name/desc/unit price */}
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-qc-text">
-                                            {item.product.name}
-                                        </h3>
-                                        <p className="text-sm text-qc-muted">
-                                            {item.product.description}
-                                        </p>
-                                        <div className="text-sm text-qc-muted mt-2">
-                                            Unit: <span className="font-medium text-qc-text">${item.product.price.toFixed(2)}</span>
-                                        </div>
-                                    </div>
+  const handleQuantityChange = useCallback(
+    (productId: string, value: string) => {
+      let v = parseInt(value || "1", 10);
+      if (Number.isNaN(v) || v < 1) v = 1;
+      updateQuantity(productId, v);
+    },
+    [updateQuantity],
+  );
 
-                                    {/* Middle: quantity + actions */}
-                                    <div className="flex flex-col items-center gap-2">
-                                        <div className="flex items-center gap-2">
-                                            <label className="sr-only">Quantity</label>
-                                            <input
-                                                type="number"
-                                                min={1}
-                                                value={item.quantity}
-                                                onChange={(e) => handleQuantityChange(item.product.id, e.target.value)}
-                                                className="w-20 bg-transparent border border-qc-border text-qc-text rounded px-2 py-1"
-                                                aria-label="Quantity"
-                                            />
+  return (
+    <div className="bg-qc-surface shadow-sm rounded-md overflow-hidden">
+      <ul>
+        {cartItems &&
+          cartItems.map((item) => (
+            <li
+              key={item.product.id}
+              className="flex gap-4 p-4 border-b border-qc-border last:border-b-0 items-center"
+            >
+              <ProductImage
+                product={item.product}
+                imageClass="w-24 h-24 object-cover rounded"
+              />
 
-                                            <button
-                                                onClick={() => removeFromCart(item.product.id)}
-                                                className="px-3 py-1 text-sm border border-qc-accent text-qc-accent-on rounded bg-qc-accent hover:bg-qc-accent-hover transition-colors duration-200"
-                                                aria-label={`Remove ${item.product.name} from cart`}
-                                            >
-                                                Remove
-                                            </button>
+              {/* Left: name/desc/unit price */}
+              <div className="flex-1">
+                <h3 className="font-semibold text-qc-text">
+                  {item.product.name}
+                </h3>
+                <p className="text-sm text-qc-muted">
+                  {item.product.description}
+                </p>
+                <div className="text-sm text-qc-muted mt-2">
+                  Unit:{" "}
+                  <span className="font-medium text-qc-text">
+                    ${item.product.price.toFixed(2)}
+                  </span>
+                </div>
+              </div>
 
-                                            <button
-                                                onClick={() => {
-                                                    // Simple save-for-later: remove from cart for now
-                                                    addToSaveForLater(item);
-                                                }}
-                                                className="px-3 py-1 text-sm border border-qc-accent text-qc-accent rounded hover:bg-qc-accent hover:text-qc-accent-on transition-colors duration-200"
-                                                aria-label={`Save ${item.product.name} for later`}
-                                            >
-                                                Save for later
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
+              {/* Middle: quantity + actions */}
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <label className="sr-only">Quantity</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={item.quantity}
+                    onChange={(e) =>
+                      handleQuantityChange(item.product.id, e.target.value)
+                    }
+                    className="w-20 bg-transparent border border-qc-border text-qc-text rounded px-2 py-1"
+                    aria-label="Quantity"
+                  />
 
-                                    {/* Right: item total */}
-                                    <div className="text-sm font-semibold text-qc-text">
-                                        ${(item.product.price * item.quantity).toFixed(2)}
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
+                  <button
+                    onClick={() => removeFromCart(item.product.id)}
+                    className="px-3 py-1 text-sm border border-qc-accent text-qc-accent-on rounded bg-qc-accent hover:bg-qc-accent-hover transition-colors duration-200"
+                    aria-label={`Remove ${item.product.name} from cart`}
+                  >
+                    Remove
+                  </button>
 
-                        <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div className="text-sm text-qc-muted">
-                                Items: <span className="font-medium text-qc-text">{totalDistinct}</span>
-                            </div>
-                            <div className="text-sm text-qc-muted">
-                                Quantity: <span className="font-medium text-qc-text">{totalQuantity}</span>
-                            </div>
-                            <div className="text-lg font-semibold text-qc-text">
-                                Total: ${totalPrice.toFixed(2)}
-                            </div>
-                        </div>
-                    </div>
-    );
+                  <button
+                    onClick={() => {
+                      // Simple save-for-later: remove from cart for now
+                      addToSaveForLater(item);
+                    }}
+                    className="px-3 py-1 text-sm border border-qc-accent text-qc-accent rounded hover:bg-qc-accent hover:text-qc-accent-on transition-colors duration-200"
+                    aria-label={`Save ${item.product.name} for later`}
+                  >
+                    Save for later
+                  </button>
+                </div>
+              </div>
+
+              {/* Right: item total */}
+              <div className="text-sm font-semibold text-qc-text">
+                ${(item.product.price * item.quantity).toFixed(2)}
+              </div>
+            </li>
+          ))}
+      </ul>
+
+      <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="text-sm text-qc-muted">
+          Items:{" "}
+          <span className="font-medium text-qc-text">{totalDistinct}</span>
+        </div>
+        <div className="text-sm text-qc-muted">
+          Quantity:{" "}
+          <span className="font-medium text-qc-text">{totalQuantity}</span>
+        </div>
+        <div className="text-lg font-semibold text-qc-text">
+          Total: ${totalPrice.toFixed(2)}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default CartList;

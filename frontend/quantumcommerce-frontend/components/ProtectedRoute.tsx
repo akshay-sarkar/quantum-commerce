@@ -1,23 +1,27 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated } = useAuth();
-    const router = useRouter();
+export default function ProtectedRoute({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            router.push('/login');
-        }
-    }, [isAuthenticated, router]);
-
-    // Don't render children if not authenticated
+  useEffect(() => {
     if (!isAuthenticated) {
-        return null;
+      router.push("/login");
     }
+  }, [isAuthenticated, router]);
 
-    return <>{children}</>;
+  // Don't render children if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <>{children}</>;
 }

@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const GET_PRODUCTS = gql`
   query GetProducts {
@@ -14,42 +14,41 @@ export const GET_PRODUCTS = gql`
   }
 `;
 
-
 export const GET_MY_CART = gql`
-    query GetMyCart {
-        myCart {
-            id
-            userId
-            updatedAt
-            items {
-                quantity
-                product {
-                    id
-                    name
-                    description
-                    price
-                    category
-                    imageUrl
-                }
-            }
+  query GetMyCart {
+    myCart {
+      id
+      userId
+      updatedAt
+      items {
+        quantity
+        product {
+          id
+          name
+          description
+          price
+          category
+          imageUrl
         }
+      }
     }
+  }
 `;
 
-// Mutation 
+// Mutation
 export const LOGIN_MUTATION = gql`
-    mutation Login($input: LoginInput!){
-        login(input: $input) {
-            token
-            user {
-                id
-                email
-                firstName
-                lastName
-                userType
-            }
-        }
+  mutation Login($input: LoginInput!) {
+    login(input: $input) {
+      token
+      user {
+        id
+        email
+        firstName
+        lastName
+        userType
+      }
     }
+  }
 `;
 
 export const REGISTER_MUTATION = gql`
@@ -67,14 +66,13 @@ export const REGISTER_MUTATION = gql`
   }
 `;
 
-
 export const SYNC_CART_MUTATION = gql`
-    mutation SyncCart($items: [SyncCartItemInput!]!) {
-        syncCart(input: { items: $items }) {
-            id
-            updatedAt
-        }
+  mutation SyncCart($items: [SyncCartItemInput!]!) {
+    syncCart(input: { items: $items }) {
+      id
+      updatedAt
     }
+  }
 `;
 
 export const LOGIN_WITH_GOOGLE = gql`

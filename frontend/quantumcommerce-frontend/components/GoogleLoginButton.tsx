@@ -1,27 +1,26 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { GoogleLogin } from '@react-oauth/google';
-import { useAuth } from '../contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import {CredentialResponse} from '@react-oauth/google';
+import React from "react";
+import { GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { CredentialResponse } from "@react-oauth/google";
 
 export default function GoogleLoginButton() {
-
-  const  { handleGoogleLogin } = useAuth();
+  const { handleGoogleLogin } = useAuth();
   const router = useRouter();
 
   const handleSuccess = (res: CredentialResponse | null) => {
     if (!res?.credential) return; // user closed popup, etc.
     const idToken = res.credential;
-    if(handleGoogleLogin){
-        handleGoogleLogin(idToken);
-        router.push('/products');
+    if (handleGoogleLogin) {
+      handleGoogleLogin(idToken);
+      router.push("/products");
     }
   };
 
   const handleError = () => {
-    console.error('Google login error');
+    console.error("Google login error");
   };
 
   return (
