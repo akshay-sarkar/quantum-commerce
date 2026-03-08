@@ -1,23 +1,23 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 const categories = [
-  { name: 'Electronics', tagline: 'Innovation at your fingertips' },
-  { name: 'Clothing', tagline: 'Modern essentials, refined' },
-  { name: 'Books', tagline: 'Knowledge, beautifully curated' },
-  { name: 'Furniture', tagline: 'Living spaces, elevated' },
+  { name: "Electronics", tagline: "Innovation at your fingertips" },
+  { name: "Clothing", tagline: "Modern essentials, refined" },
+  { name: "Books", tagline: "Knowledge, beautifully curated" },
+  { name: "Furniture", tagline: "Living spaces, elevated" },
 ];
 
 const techStack = [
-  { name: 'Next.js', category: 'Frontend / SSR & SSG' },
-  { name: 'TypeScript', category: 'Language' },
-  { name: 'Redux Toolkit & Thunk', category: 'State Management' },
-  { name: 'Tailwind CSS', category: 'Styling' },
-  { name: 'GraphQL', category: 'Data Fetching' },
-  { name: 'Node.js', category: 'Backend Runtime' },
-  { name: 'AWS', category: 'Cloud Deployment' },
-  { name: 'MongoDB', category: 'NoSQL Database' },
-  { name: 'Redis', category: 'Caching & Sessions' },
-  { name: 'JWT & Cookies', category: 'Authentication' },
+  { name: "Next.js", category: "Frontend / SSR & SSG" },
+  { name: "TypeScript", category: "Language" },
+  { name: "Redux Toolkit & Thunk", category: "State Management" },
+  { name: "Tailwind CSS", category: "Styling" },
+  { name: "GraphQL", category: "Data Fetching" },
+  { name: "Node.js", category: "Backend Runtime" },
+  { name: "AWS", category: "Cloud Deployment" },
+  { name: "MongoDB", category: "NoSQL Database" },
+  { name: "Redis", category: "Caching & Sessions" },
+  { name: "JWT & Cookies", category: "Authentication" },
 ];
 
 export default function Home() {
@@ -32,7 +32,7 @@ export default function Home() {
         <div className="relative z-10 text-center max-w-5xl">
           <p
             className="qc-up text-qc-accent tracking-[0.3em] uppercase text-xs sm:text-sm font-medium mb-8"
-            style={{ animationDelay: '100ms' }}
+            style={{ animationDelay: "100ms" }}
           >
             The Future of Commerce
           </p>
@@ -41,8 +41,8 @@ export default function Home() {
             <span
               className="qc-up block tracking-[-0.03em] font-normal"
               style={{
-                fontSize: 'clamp(3.5rem, 11vw, 11rem)',
-                animationDelay: '250ms',
+                fontSize: "clamp(3.5rem, 11vw, 11rem)",
+                animationDelay: "250ms",
               }}
             >
               QUANTUM
@@ -50,14 +50,14 @@ export default function Home() {
 
             <div
               className="qc-expand mx-auto my-3 md:my-5 h-px max-w-28 bg-linear-to-r from-transparent via-qc-accent to-transparent"
-              style={{ animationDelay: '500ms' }}
+              style={{ animationDelay: "500ms" }}
             />
 
             <span
               className="qc-up block tracking-[-0.03em] font-normal"
               style={{
-                fontSize: 'clamp(3.5rem, 11vw, 11rem)',
-                animationDelay: '400ms',
+                fontSize: "clamp(3.5rem, 11vw, 11rem)",
+                animationDelay: "400ms",
               }}
             >
               COMMERCE
@@ -66,7 +66,7 @@ export default function Home() {
 
           <p
             className="qc-up mt-8 md:mt-12 text-qc-muted text-base md:text-lg tracking-wide max-w-md mx-auto"
-            style={{ animationDelay: '650ms' }}
+            style={{ animationDelay: "650ms" }}
           >
             A high-performance e-commerce platform engineered for the modern
             web.
@@ -74,7 +74,7 @@ export default function Home() {
 
           <div
             className="qc-up mt-10 md:mt-14 flex flex-col sm:flex-row gap-4 justify-center"
-            style={{ animationDelay: '800ms' }}
+            style={{ animationDelay: "800ms" }}
           >
             <Link
               href="/products"
@@ -94,7 +94,7 @@ export default function Home() {
         {/* Scroll indicator */}
         <div
           className="qc-in absolute bottom-8 left-1/2 -translate-x-1/2"
-          style={{ animationDelay: '1200ms' }}
+          style={{ animationDelay: "1200ms" }}
         >
           <div className="qc-scroll flex flex-col items-center gap-2 text-qc-muted">
             <span className="text-[10px] tracking-[0.25em] uppercase">
@@ -128,7 +128,7 @@ export default function Home() {
             </span>
             <h2
               className="font-display mt-4 tracking-[-0.02em]"
-              style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}
+              style={{ fontSize: "clamp(2rem, 5vw, 3.75rem)" }}
             >
               Shop by Category
             </h2>
@@ -144,7 +144,7 @@ export default function Home() {
                 <div>
                   <h3
                     className="font-display tracking-[-0.01em]"
-                    style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}
+                    style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)" }}
                   >
                     {cat.name}
                   </h3>
@@ -154,9 +154,7 @@ export default function Home() {
                   <span className="text-xs tracking-[0.2em] uppercase text-qc-muted group-hover:text-qc-accent transition-colors duration-300">
                     Explore
                   </span>
-                  <span className="qc-arrow text-qc-muted text-xl">
-                    &rarr;
-                  </span>
+                  <span className="qc-arrow text-qc-muted text-xl">&rarr;</span>
                 </div>
               </Link>
             ))}
@@ -176,7 +174,7 @@ export default function Home() {
             </span>
             <h2
               className="font-display mt-4 tracking-[-0.02em]"
-              style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}
+              style={{ fontSize: "clamp(2rem, 5vw, 3.75rem)" }}
             >
               System Architecture &amp; Technologies
             </h2>
@@ -209,13 +207,13 @@ export default function Home() {
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <h2
             className="font-display tracking-[-0.02em]"
-            style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}
+            style={{ fontSize: "clamp(2rem, 5vw, 3.75rem)" }}
           >
             Begin Your Journey
           </h2>
           <p className="mt-6 text-qc-muted text-base md:text-lg max-w-lg mx-auto">
-            Discover a curated selection of products designed for the
-            discerning buyer.
+            Discover a curated selection of products designed for the discerning
+            buyer.
           </p>
           <Link
             href="/products"

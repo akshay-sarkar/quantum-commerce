@@ -8,27 +8,27 @@
   --qc-bg-warm: #0d0b08;
   --qc-surface: #111111;
   --qc-border: #1a1a1a;
-  --qc-text: #F0EDE6;
-  --qc-muted: #8A8578;
-  --qc-accent: #C9A96E;
-  --qc-accent-hover: #E2D1A8;
+  --qc-text: #f0ede6;
+  --qc-muted: #8a8578;
+  --qc-accent: #c9a96e;
+  --qc-accent-hover: #e2d1a8;
   --qc-accent-on: #060606;
   --qc-accent-faint: rgba(201, 169, 110, 0.3);
   --qc-placeholder: #5a5650;
 }
 
 [data-theme="light"] {
-  --qc-bg: #FAF9F6;
-  --qc-bg-warm: #F3EFE8;
-  --qc-surface: #F0EDE6;
-  --qc-border: #DDD9D0;
-  --qc-text: #1A1816;
-  --qc-muted: #7A756D;
-  --qc-accent: #9A7B4F;
+  --qc-bg: #faf9f6;
+  --qc-bg-warm: #f3efe8;
+  --qc-surface: #f0ede6;
+  --qc-border: #ddd9d0;
+  --qc-text: #1a1816;
+  --qc-muted: #7a756d;
+  --qc-accent: #9a7b4f;
   --qc-accent-hover: #826839;
-  --qc-accent-on: #FFFFFF;
+  --qc-accent-on: #ffffff;
   --qc-accent-faint: rgba(154, 123, 79, 0.2);
-  --qc-placeholder: #B0A99E;
+  --qc-placeholder: #b0a99e;
 }
 
 @theme inline {
@@ -52,34 +52,60 @@ body {
   background: var(--qc-bg);
   color: var(--qc-text);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* ═══ Keyframes ═══ */
 
 @keyframes qc-fade-up {
-  from { opacity: 0; transform: translateY(32px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes qc-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes qc-scale-x {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 @keyframes qc-drift {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.18); }
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.18);
+  }
 }
 
 @keyframes qc-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
 }
 
 /* ═══ Animation Utilities ═══ */
@@ -103,8 +129,15 @@ body {
 
 .qc-grid {
   background-image:
-    linear-gradient(color-mix(in srgb, var(--qc-accent) 3.5%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--qc-accent) 3.5%, transparent) 1px, transparent 1px);
+    linear-gradient(
+      color-mix(in srgb, var(--qc-accent) 3.5%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--qc-accent) 3.5%, transparent) 1px,
+      transparent 1px
+    );
   background-size: 80px 80px;
 }
 
@@ -113,7 +146,11 @@ body {
   width: clamp(300px, 45vw, 600px);
   height: clamp(300px, 45vw, 600px);
   border-radius: 9999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--qc-accent) 10%, transparent) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--qc-accent) 10%, transparent) 0%,
+    transparent 70%
+  );
   top: 40%;
   left: 55%;
   transform: translate(-50%, -50%);
@@ -127,7 +164,11 @@ body {
   width: clamp(200px, 30vw, 350px);
   height: clamp(200px, 30vw, 350px);
   border-radius: 9999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--qc-accent) 7%, transparent) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--qc-accent) 7%, transparent) 0%,
+    transparent 70%
+  );
   top: 65%;
   left: 28%;
   transform: translate(-50%, -50%);
@@ -139,7 +180,9 @@ body {
 /* ═══ Interactive Elements ═══ */
 
 .qc-card {
-  transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    border-color 0.4s ease,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .qc-card:hover {
   border-color: var(--qc-accent);
@@ -150,7 +193,9 @@ body {
   color: var(--qc-accent);
 }
 .qc-arrow {
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
 }
 
 .qc-scroll {
@@ -158,6 +203,13 @@ body {
 }
 
 /* Theme toggle icons — CSS-driven to avoid hydration mismatch */
-.qc-sun, .qc-moon { display: none; }
-[data-theme="dark"] .qc-sun { display: block; }
-[data-theme="light"] .qc-moon { display: block; }
+.qc-sun,
+.qc-moon {
+  display: none;
+}
+[data-theme="dark"] .qc-sun {
+  display: block;
+}
+[data-theme="light"] .qc-moon {
+  display: block;
+}

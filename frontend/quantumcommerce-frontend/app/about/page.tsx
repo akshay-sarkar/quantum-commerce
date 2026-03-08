@@ -1,57 +1,57 @@
 const techStack = [
-  { name: 'Next.js', category: 'Frontend / SSR & SSG' },
-  { name: 'TypeScript', category: 'Language' },
-  { name: 'Tailwind CSS', category: 'Styling' },
-  { name: 'GraphQL', category: 'API Layer' },
-  { name: 'Node.js', category: 'Backend Runtime' },
-  { name: 'MongoDB', category: 'NoSQL Database' },
-  { name: 'Docker', category: 'Containerization' },
-  { name: 'AWS EC2', category: 'Cloud Deployment' },
-  { name: 'GitHub Actions', category: 'CI/CD Pipeline' },
-  { name: 'Vercel', category: 'Frontend Hosting' },
+  { name: "Next.js", category: "Frontend / SSR & SSG" },
+  { name: "TypeScript", category: "Language" },
+  { name: "Tailwind CSS", category: "Styling" },
+  { name: "GraphQL", category: "API Layer" },
+  { name: "Node.js", category: "Backend Runtime" },
+  { name: "MongoDB", category: "NoSQL Database" },
+  { name: "Docker", category: "Containerization" },
+  { name: "AWS EC2", category: "Cloud Deployment" },
+  { name: "GitHub Actions", category: "CI/CD Pipeline" },
+  { name: "Vercel", category: "Frontend Hosting" },
 ];
 
 const architecture = [
   {
-    label: 'API',
-    detail: 'GraphQL via Apollo Server, deployed on AWS EC2 inside Docker',
+    label: "API",
+    detail: "GraphQL via Apollo Server, deployed on AWS EC2 inside Docker",
   },
   {
-    label: 'Frontend',
-    detail: 'Next.js App Router with SSR/SSG, auto-deployed on Vercel',
+    label: "Frontend",
+    detail: "Next.js App Router with SSR/SSG, auto-deployed on Vercel",
   },
   {
-    label: 'Database',
-    detail: 'MongoDB Atlas with Mongoose ODM',
+    label: "Database",
+    detail: "MongoDB Atlas with Mongoose ODM",
   },
   {
-    label: 'CI/CD',
+    label: "CI/CD",
     detail:
-      'GitHub Actions auto-builds Docker images, pushes to Docker Hub, and deploys to EC2 via SSH',
+      "GitHub Actions auto-builds Docker images, pushes to Docker Hub, and deploys to EC2 via SSH",
   },
 ];
 
 const specialties = [
-  'JavaScript',
-  'TypeScript',
-  'React',
-  'Node.js',
-  'Docker',
-  'AWS',
+  "JavaScript",
+  "TypeScript",
+  "React",
+  "Node.js",
+  "Docker",
+  "AWS",
 ];
 
 const authorLinks = [
   {
-    label: 'GitHub',
-    href: 'https://github.com/akshay-sarkar',
+    label: "GitHub",
+    href: "https://github.com/akshay-sarkar",
   },
   {
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/akshaysarkaruta/',
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/akshaysarkaruta/",
   },
   {
-    label: 'Portfolio',
-    href: 'https://akshay-sarkar.github.io/akshaysarkar/',
+    label: "Portfolio",
+    href: "https://akshay-sarkar.github.io/akshaysarkar/",
   },
 ];
 
@@ -67,32 +67,32 @@ export default function AboutPage() {
           <div className="max-w-3xl">
             <span
               className="qc-up text-qc-accent tracking-[0.3em] uppercase text-xs font-medium"
-              style={{ animationDelay: '100ms' }}
+              style={{ animationDelay: "100ms" }}
             >
               About
             </span>
             <h1
               className="qc-up font-display mt-4 tracking-[-0.02em]"
               style={{
-                fontSize: 'clamp(2rem, 5vw, 3.75rem)',
-                animationDelay: '250ms',
+                fontSize: "clamp(2rem, 5vw, 3.75rem)",
+                animationDelay: "250ms",
               }}
             >
               Quantum Commerce
             </h1>
             <p
               className="qc-up mt-6 text-qc-muted text-base md:text-lg leading-relaxed max-w-2xl"
-              style={{ animationDelay: '400ms' }}
+              style={{ animationDelay: "400ms" }}
             >
               A full-stack e-commerce platform engineered from the ground up to
-              demonstrate modern web development and DevOps practices.
-              From a GraphQL API running in Docker on AWS to a server-rendered
-              Next.js frontend on Vercel &mdash; every layer is built with
-              performance as the primary directive.
+              demonstrate modern web development and DevOps practices. From a
+              GraphQL API running in Docker on AWS to a server-rendered Next.js
+              frontend on Vercel &mdash; every layer is built with performance
+              as the primary directive.
             </p>
             <p
               className="qc-up mt-4 text-qc-muted text-sm leading-relaxed max-w-2xl"
-              style={{ animationDelay: '550ms' }}
+              style={{ animationDelay: "550ms" }}
             >
               This project serves as a portfolio piece showcasing end-to-end
               ownership: architecture design, authentication, CI/CD pipelines,
@@ -115,7 +115,7 @@ export default function AboutPage() {
             </span>
             <h2
               className="font-display mt-4 tracking-[-0.02em]"
-              style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}
+              style={{ fontSize: "clamp(2rem, 5vw, 3.75rem)" }}
             >
               Built With
             </h2>
@@ -165,7 +165,7 @@ export default function AboutPage() {
             </span>
             <h2
               className="font-display mt-4 tracking-[-0.02em]"
-              style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}
+              style={{ fontSize: "clamp(2rem, 5vw, 3.75rem)" }}
             >
               Akshay Sarkar
             </h2>
@@ -173,9 +173,9 @@ export default function AboutPage() {
 
           <div className="max-w-3xl">
             <p className="text-qc-muted text-base md:text-lg leading-relaxed">
-              A builder of things, with a little help from AI. With 12+ years
-              of experience in the digital realm, Akshay has had his hands in
-              web, cloud, and full-stack technologies &mdash; specializing in
+              A builder of things, with a little help from AI. With 12+ years of
+              experience in the digital realm, Akshay has had his hands in web,
+              cloud, and full-stack technologies &mdash; specializing in
               JavaScript and modern tooling.
             </p>
             <p className="mt-4 text-qc-muted text-sm">
