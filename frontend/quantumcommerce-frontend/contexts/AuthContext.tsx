@@ -1,8 +1,8 @@
 'use client';
-import { LOGIN_MUTATION, REGISTER_MUTATION } from '@/graphql/gql';
+import { LOGIN_MUTATION, REGISTER_MUTATION, LOGIN_WITH_GOOGLE } from '@/graphql/gql';
 import { useMutation } from '@apollo/client/react';
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { IUser, ILoginResponse, IRegisterResponse, AuthContextType } from '@/models';
+import { IUser, ILoginResponse, IRegisterResponse, AuthContextType, IGoogleLoginResponse } from '@/models';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     const [loginMutation] = useMutation<ILoginResponse>(LOGIN_MUTATION);
     const [registerMutation] = useMutation<IRegisterResponse>(REGISTER_MUTATION);
+      const [loginWithGoogle] = useMutation<IGoogleLoginResponse>(LOGIN_WITH_GOOGLE);
 
     const handleAuthSuccess = (authResponse: { token: string; user: IUser }) => {
         const { token, user } = authResponse;
@@ -64,6 +65,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
     };
 
+    const handleGoogleLogin = async (idToken: string) => {
+        loginWithGoogle({
+            variables: { idToken },
+          }).then(({ data }) => {
+            if (data?.loginWithGoogle) {
+              const { token, user } = data.loginWithGoogle;
+      
+              // Store in sessionStorage to persist login
+              sessionStorage.setItem('token', token);
+              sessionStorage.setItem('user', JSON.stringify(user));
+      
+              setToken(token);
+              setUser(user);
+            }
+          }).catch((err) => {
+            console.error('google login failed', err);
+          });
+    };
+
     const value = {
         user,
         token,
@@ -72,7 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signup,
         logout,
         setToken,
-        setUser
+        setUser,
+        handleGoogleLogin
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

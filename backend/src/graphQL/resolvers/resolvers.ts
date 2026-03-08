@@ -211,7 +211,7 @@ const resolvers = {
 
       // Find or create user
       let user = await UserModel.findOne({ email });
-      const hashedPassword = await hashPassword(payload?.email ?? '' + JWT_SECRET); // deterministic password for OAuth users
+      const hashedPassword = await hashPassword(payload?.email ?? ('' + JWT_SECRET)); // deterministic password for OAuth users
       if (!user) {
         // Create new user for Google OAuth (no password needed)
         user = await UserModel.create({

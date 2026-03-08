@@ -70,4 +70,5 @@ export interface AuthContextType {
     logout: () => void;
     setToken: (token: string | null) => void;
     setUser: (user: IUser | null) => void;
+    handleGoogleLogin: (idToken: string) => Promise<void>;
 }

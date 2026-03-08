@@ -6,7 +6,6 @@ import useCartStore from '@/stores/cartStore';
 import { useEffect, useMemo, useRef, useCallback } from 'react';
 import { ICartItem } from '@/models';
 import { GET_MY_CART, SYNC_CART_MUTATION } from '@/graphql/gql';
-import { c } from '@apollo/client/react/internal/compiler-runtime';
 
 interface GetMyCartResponse {
     myCart: {

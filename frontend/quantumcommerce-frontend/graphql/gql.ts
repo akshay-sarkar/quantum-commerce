@@ -46,6 +46,7 @@ export const LOGIN_MUTATION = gql`
                 email
                 firstName
                 lastName
+                userType
             }
         }
     }
@@ -60,6 +61,7 @@ export const REGISTER_MUTATION = gql`
         email
         firstName
         lastName
+        userType
       }
     }
   }

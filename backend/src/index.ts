@@ -13,11 +13,16 @@ async function startServer() {
   const app = express();
   await connectDB();
 
-  const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(',') || [
-    'http://localhost:3000',
-  ];
+  const allowedOrigins =
+    process.env.CORS_ALLOWED_ORIGINS?.split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean) ?? [];
+
+  const normalizedAllowedOrigins = allowedOrigins.length
+    ? allowedOrigins
+    : ['http://localhost:3000'];
   const corsOptions = {
-    origin: allowedOrigins,
+    origin: normalizedAllowedOrigins,
     credentials: true, // Required for cookie-based auth
   };
   app.use(cors(corsOptions));
