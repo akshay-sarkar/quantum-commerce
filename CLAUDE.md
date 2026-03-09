@@ -237,9 +237,8 @@ quantum-commerce/
 
 ## Known Bugs
 
-1. **Product price type** (`backend/src/models/Product.ts`): `price` field uses `Float16Array` instead of `Number` — should be `price: { type: Number, required: true }`
-2. **Google login error handling** (`backend/src/graphQL/resolvers/resolvers.ts`): On token verification failure returns a string instead of throwing an Error — causes non-standard GraphQL errors
-3. **Save-for-later not synced**: CartSyncBridge only syncs main cart; save-for-later items lost on session end
+1. **Google login error handling** (`backend/src/graphQL/resolvers/resolvers.ts`): On token verification failure returns a string instead of throwing an Error — causes non-standard GraphQL errors
+2. **Save-for-later not synced**: CartSyncBridge only syncs main cart; save-for-later items lost on session end
 
 ## Troubleshooting
 
