@@ -45,32 +45,21 @@ export default function CartSyncBridge() {
           productId: item.product.id,
           quantity: item.quantity,
         }))
-        .sort((a: any, b: any) => a.productId.localeCompare(b.productId)),
+        .sort((a, b) => a.productId.localeCompare(b.productId)),
     );
   }, []);
 
   useEffect(() => {
-    console.log(
-      "CartSyncBridge useEffect - loading:",
-      loading,
-      "error:",
-      error,
-      "data:",
-      data,
-    );
     if (isInitialLoadDone.current) {
       return;
     }
     if (loading) {
-      console.log("Loading cart data...");
       return;
     }
     if (error || data?.myCart === null) {
-      console.error("Error fetching cart:", error);
       isInitialLoadDone.current = true;
     }
     if (data?.myCart) {
-      console.log("Fetched cart data:", data);
       const serverItemsSnapshot = generateSnapshot(data.myCart.items);
       const serverSavedSnapshot = generateSnapshot(
         data.myCart.savedForLaterItems,
@@ -97,7 +86,6 @@ export default function CartSyncBridge() {
   );
 
   useEffect(() => {
-    console.log("Cart snapshot changed:", cartSnapshot, savedSnapshot);
     if (!isAuthenticated) {
       return;
     }

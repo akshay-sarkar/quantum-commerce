@@ -216,7 +216,8 @@ quantum-commerce/
 - **Authentication**: JWT login/signup with validation, Google OAuth 2.0, AuthContext (sessionStorage), ProtectedRoute, Apollo Client auto-injects Bearer token
 - **User Types**: BUYER (email/password), G_BUYER (Google OAuth), ADMIN
 - **Product Catalog**: GraphQL product queries, responsive product grid, product cards with cart integration
-- **Shopping Cart**: Zustand state (localStorage), add/remove/quantity controls, save-for-later, CartSyncBridge syncs to server on login
+- **Shopping Cart**: Zustand state (localStorage), add/remove/quantity controls, save-for-later, CartSyncBridge syncs both cart and save-for-later to server on login
+- **Save-for-Later Server Sync**: Persisted to MongoDB via `savedForLaterItems` on Cart model; synced bidirectionally on auth and on change (debounced)
 - **Theme System**: Dark/light mode toggle, CSS variables, localStorage persistence
 - **Pages**: Home, Products, Cart (protected), Login/Signup, About
 - **Deployment**: Dockerized backend on EC2 (multi-platform), frontend on Vercel, Cloudflare SSL/DNS
@@ -231,14 +232,12 @@ quantum-commerce/
 | Product Filtering & Search | No filter by category/price, no search bar | Medium |
 | Admin Panel | ADMIN role exists; no UI to add/edit/delete products | Medium |
 | Testing | `npm test` is a stub. Needs unit + integration tests | Medium |
-| Save-for-Later Server Sync | Save-for-later is local-only; not persisted to DB | Low |
 | Wishlist | No wishlist feature | Low |
 | Order History | Users can't view past orders | Low |
 
 ## Known Bugs
 
-1. **Google login error handling** (`backend/src/graphQL/resolvers/resolvers.ts`): On token verification failure returns a string instead of throwing an Error — causes non-standard GraphQL errors
-2. **Save-for-later not synced**: CartSyncBridge only syncs main cart; save-for-later items lost on session end
+_No known bugs at this time._
 
 ## Troubleshooting
 
