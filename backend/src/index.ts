@@ -5,10 +5,16 @@ import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import depthLimit from 'graphql-depth-limit';
 import { connectDB } from './config/database';
 import { verifyToken } from './utils/auth';
 import typeDefs from './graphQL/typeDefs/typeDefs';
 import resolvers from './graphQL/resolvers/resolvers';
+
+const isProduction = process.env.NODE_ENV === 'production';
+if (!process.env.NODE_ENV) {
+  console.warn('WARNING: NODE_ENV is not set. Running in development mode — stack traces will be exposed in errors.');
+}
 
 async function startServer() {
   const app = express();
@@ -57,9 +63,10 @@ async function startServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    introspection: true,
+    introspection: !isProduction,
     csrfPrevention: true,
     cache: 'bounded',
+    validationRules: [depthLimit(5)],
 
     context: ({ req }) => {
       // Extract token from Authorization header

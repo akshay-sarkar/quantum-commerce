@@ -150,9 +150,17 @@ const resolvers = {
       }
       const { items, savedForLaterItems = [] } = input;
 
+      const MAX_CART_ITEMS = 100;
+      if (items.length > MAX_CART_ITEMS || savedForLaterItems.length > MAX_CART_ITEMS) {
+        throw new Error(`Cart cannot exceed ${MAX_CART_ITEMS} items`);
+      }
+
       const toDbItems = async (rawItems: any[]) =>
         Promise.all(
           rawItems.map(async (item: any) => {
+            if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 100) {
+              throw new Error(`Invalid quantity for product ${item.productId}. Must be between 1 and 100.`);
+            }
             const product = await findProductByIdentifier(item.productId);
             if (!product) {
               throw new Error(`Product not found: ${item.productId}`);
