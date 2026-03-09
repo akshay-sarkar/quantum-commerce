@@ -18,9 +18,10 @@ interface ICartState {
   totalPrice: () => number;
   existingItemQuantity: (productId: string) => number;
   setCart: (cart: ICart) => void;
+  setSaveForLaterCart: (cart: ICart) => void;
 }
 
-const emptyCart: ICart = { id: "", userId: "", items: [], updatedAt: "" };
+const emptyCart: ICart = { id: "", userId: "", items: [], savedForLaterItems: [], updatedAt: "" };
 
 const useCartStore = create<ICartState>()(
   persist(
@@ -142,6 +143,7 @@ const useCartStore = create<ICartState>()(
         })),
       clearCart: () => set({ cart: emptyCart as ICart }),
       setCart: (cart: ICart) => set({ cart }),
+      setSaveForLaterCart: (cart: ICart) => set({ saveForLaterCart: cart }),
       totalPrice: () =>
         get().cart.items.reduce(
           (total: number, item: ICartItem) =>

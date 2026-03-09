@@ -4,9 +4,10 @@ import CartModel from '../../models/Cart';
 import { comparePassword, generateToken, hashPassword } from '../../utils/auth';
 import mongoose from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
+import { AuthenticationError } from 'apollo-server-express';
+import crypto from 'crypto';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID?.trim();
-const JWT_SECRET = process.env.JWT_SECRET?.trim();
 
 const findProductByIdentifier = async (identifier: unknown) => {
   if (identifier === null || identifier === undefined) {
@@ -52,9 +53,10 @@ const resolvers = {
       if (!context.user) {
         throw new Error('Not Authenticated');
       }
-      return await CartModel.findOne({ userId: context.user.userId }).populate(
-        'items.product'
-      );
+      return await CartModel.findOne({ userId: context.user.userId }).populate([
+        'items.product',
+        'savedForLaterItems.product',
+      ]);
     },
   },
   Mutation: {
@@ -121,6 +123,11 @@ const resolvers = {
         throw new Error('Invalid email or password');
       }
 
+      // Block OAuth accounts from password-based login
+      if (user.userType === 'G_BUYER') {
+        throw new AuthenticationError('This account uses Google Sign-In. Please log in with Google.');
+      }
+
       // Verify password
       const isValidPassword = await comparePassword(password, user.password);
       if (!isValidPassword) {
@@ -141,28 +148,39 @@ const resolvers = {
       if (!context.user) {
         throw new Error('Not authenticated');
       }
-      const { items } = input;
+      const { items, savedForLaterItems = [] } = input;
 
-      const dbItems = await Promise.all(
-        items.map(async (item: any) => {
-          const product = await findProductByIdentifier(item.productId);
-          if (!product) {
-            throw new Error(`Product not found: ${item.productId}`);
-          }
-          return {
-            product: product._id,
-            quantity: item.quantity,
-          };
-        })
-      );
+      const MAX_CART_ITEMS = 100;
+      if (items.length > MAX_CART_ITEMS || savedForLaterItems.length > MAX_CART_ITEMS) {
+        throw new Error(`Cart cannot exceed ${MAX_CART_ITEMS} items`);
+      }
+
+      const toDbItems = async (rawItems: any[]) =>
+        Promise.all(
+          rawItems.map(async (item: any) => {
+            if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 100) {
+              throw new Error(`Invalid quantity for product ${item.productId}. Must be between 1 and 100.`);
+            }
+            const product = await findProductByIdentifier(item.productId);
+            if (!product) {
+              throw new Error(`Product not found: ${item.productId}`);
+            }
+            return { product: product._id, quantity: item.quantity };
+          })
+        );
+
+      const [dbItems, dbSavedItems] = await Promise.all([
+        toDbItems(items),
+        toDbItems(savedForLaterItems),
+      ]);
 
       //Fetch User Id and Cart
       const userId = context.user.userId;
       const cart = await CartModel.findOneAndUpdate(
         { userId },
-        { items: dbItems, updatedAt: new Date() },
+        { items: dbItems, savedForLaterItems: dbSavedItems, updatedAt: new Date() },
         { upsert: true, new: true }
-      ).populate('items.product');
+      ).populate(['items.product', 'savedForLaterItems.product']);
       return cart;
     },
 
@@ -181,7 +199,7 @@ const resolvers = {
         });
       } catch (error: any) {
         console.error('Google verification failed:', error.message);
-        return `Google login failed`;
+        throw new AuthenticationError('Google login failed. Please try again.');
       }
 
       const payload = ticket.getPayload();
@@ -211,12 +229,12 @@ const resolvers = {
 
       // Find or create user
       let user = await UserModel.findOne({ email });
-      const hashedPassword = await hashPassword(payload?.email ?? ('' + JWT_SECRET)); // deterministic password for OAuth users
       if (!user) {
-        // Create new user for Google OAuth (no password needed)
+        // Create new Google OAuth user with a random, unrecoverable password hash
+        const hashedPassword = await hashPassword(crypto.randomBytes(32).toString('hex'));
         user = await UserModel.create({
           email,
-          password: hashedPassword, // Store the deterministic password
+          password: hashedPassword,
           firstName: payload.given_name || '',
           lastName: payload.family_name || '',
           userType: 'G_BUYER',

@@ -35,6 +35,7 @@ export interface ICart {
   id: string;
   userId: IUser["id"];
   items: ICartItem[];
+  savedForLaterItems: ICartItem[];
   updatedAt: string;
 }
 

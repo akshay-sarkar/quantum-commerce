@@ -2,8 +2,10 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { IUser } from '../models/User';
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is not set. Server cannot start.');
+}
 const JWT_EXPIRES_IN = '5d';
 
 type AuthTokenPayload = JwtPayload & {

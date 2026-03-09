@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartSyncBridge from "@/components/CartSyncBridge";
 import GoogleAuthProviderWrapper from "@/providers/GoogleAuthProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log("Rendering RootLayout", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <body
@@ -54,6 +54,7 @@ export default function RootLayout({
             </GoogleAuthProviderWrapper>
           </ApolloProviderWrapper>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -58,6 +58,7 @@ const typeDefs = `
         id: ID!,
         userId: ID!,
         items: [CartItem!]!,
+        savedForLaterItems: [CartItem!]!,
         updatedAt: String!
     }
     type CartItem {
@@ -81,6 +82,7 @@ const typeDefs = `
     }
     input SyncCartInput {
         items: [SyncCartItemInput!]!
+        savedForLaterItems: [SyncCartItemInput!]
     }
 `;
 
