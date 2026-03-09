@@ -52,9 +52,10 @@ const resolvers = {
       if (!context.user) {
         throw new Error('Not Authenticated');
       }
-      return await CartModel.findOne({ userId: context.user.userId }).populate(
-        'items.product'
-      );
+      return await CartModel.findOne({ userId: context.user.userId }).populate([
+        'items.product',
+        'savedForLaterItems.product',
+      ]);
     },
   },
   Mutation: {
@@ -141,28 +142,31 @@ const resolvers = {
       if (!context.user) {
         throw new Error('Not authenticated');
       }
-      const { items } = input;
+      const { items, savedForLaterItems = [] } = input;
 
-      const dbItems = await Promise.all(
-        items.map(async (item: any) => {
-          const product = await findProductByIdentifier(item.productId);
-          if (!product) {
-            throw new Error(`Product not found: ${item.productId}`);
-          }
-          return {
-            product: product._id,
-            quantity: item.quantity,
-          };
-        })
-      );
+      const toDbItems = async (rawItems: any[]) =>
+        Promise.all(
+          rawItems.map(async (item: any) => {
+            const product = await findProductByIdentifier(item.productId);
+            if (!product) {
+              throw new Error(`Product not found: ${item.productId}`);
+            }
+            return { product: product._id, quantity: item.quantity };
+          })
+        );
+
+      const [dbItems, dbSavedItems] = await Promise.all([
+        toDbItems(items),
+        toDbItems(savedForLaterItems),
+      ]);
 
       //Fetch User Id and Cart
       const userId = context.user.userId;
       const cart = await CartModel.findOneAndUpdate(
         { userId },
-        { items: dbItems, updatedAt: new Date() },
+        { items: dbItems, savedForLaterItems: dbSavedItems, updatedAt: new Date() },
         { upsert: true, new: true }
-      ).populate('items.product');
+      ).populate(['items.product', 'savedForLaterItems.product']);
       return cart;
     },
 

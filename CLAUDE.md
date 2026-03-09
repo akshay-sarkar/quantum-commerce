@@ -6,10 +6,11 @@
 - **Always run `npm run lint` before committing** — Husky pre-commit hook enforces Prettier
 - **Backend security logic only** — rate limiting, validation, and auth checks belong on the backend, not frontend
 - **Test locally before pushing to `main`** — push to `main` triggers production deployment
+- **Working branch is `Integration`** — never commit directly to `main`
 
 ## Project Overview
 
-Quantum Commerce is a full-stack e-commerce platform. GraphQL API backend deployed via Docker on AWS EC2, Next.js frontend auto-deployed on Vercel.
+Quantum Commerce is a full-stack e-commerce platform built as a portfolio project. GraphQL API backend deployed via Docker on AWS EC2, Next.js frontend auto-deployed on Vercel.
 
 **Production URLs**:
 - Frontend: https://quantum-commerce-pi.vercel.app
@@ -39,6 +40,7 @@ npm run dev               # Next.js dev server, port 3000
 ```bash
 cd backend && npm run seed
 # Expected: "Database seeded successfully" with admin + test users + sample products
+# Default credentials: admin@quantumcommerce.com / admin123, akshay.sarkar@quantumcommerce.com / test123
 ```
 
 ## Development Workflows
@@ -46,8 +48,8 @@ cd backend && npm run seed
 ### Adding a New Feature (Step-by-Step)
 
 1. Ensure you're on `Integration` branch: `git checkout Integration`
-2. Backend changes in `/backend/src/` — add schema types, resolvers, models as needed
-3. Frontend changes in `/frontend/quantumcommerce-frontend/src/`
+2. Backend changes in `/backend/src/` — add types to `graphQL/typeDefs/typeDefs.ts`, resolvers to `graphQL/resolvers/resolvers.ts`, models to `models/`
+3. Frontend changes in `/frontend/quantumcommerce-frontend/` — pages in `app/`, components in `components/`, state in `stores/`
 4. Test locally: run both `npm run dev` servers, verify in browser
 5. Run `npm run lint` in both directories
 6. Commit and push to `Integration`
@@ -71,41 +73,88 @@ cd backend && npm run seed
 
 ## Tech Stack
 
-- **Frontend**: Next.js (App Router), React, TypeScript, Tailwind CSS, Apollo Client
-- **Backend**: Express, Apollo Server, TypeScript, Mongoose, JWT (jsonwebtoken + bcryptjs)
+- **Frontend**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Apollo Client, Zustand
+- **Backend**: Express, Apollo Server, TypeScript, Mongoose, JWT (jsonwebtoken + bcryptjs), google-auth-library
 - **Database**: MongoDB Atlas
-- **Infra**: Docker (multi-platform), AWS EC2, Vercel, Cloudflare (DNS + Flexible SSL)
+- **Infra**: Docker (multi-platform AMD64/ARM64), AWS EC2, Vercel, Cloudflare (DNS + Flexible SSL)
 - **CI/CD**: GitHub Actions → Docker Hub → EC2 (auto-versioning via git tags)
 
 ## Key Conventions
 
-- **TypeScript** everywhere — backend uses CommonJS, frontend uses ESM
-- **Frontend path alias**: `@/*` maps to `src/*`
+- **TypeScript** everywhere — backend uses CommonJS (`tsc` to `dist/`), frontend uses ESM
+- **Frontend path alias**: `@/*` maps to project root (e.g. `@/components/Navbar`)
 - **Client components** use `'use client'` directive (Next.js App Router)
-- **GraphQL schema and resolvers** are co-located in `backend/src/index.ts`
+- **GraphQL schema** lives in `backend/src/graphQL/typeDefs/typeDefs.ts`
+- **GraphQL resolvers** live in `backend/src/graphQL/resolvers/resolvers.ts`
 - **Auth flow**: JWT Bearer tokens → sessionStorage → Apollo Client authLink → GraphQL context
+- **Cart state**: Zustand (localStorage) + CartSyncBridge component syncs to server on auth
+- **Theme state**: ThemeContext (localStorage) → `data-theme` attribute on `<html>` → CSS variables
 - **Formatting**: Prettier (single quotes) enforced via Husky pre-commit hook + lint-staged on `*.{ts,js,css,md}`
-- **Naming**: Use kebab-case for file/folder names, camelCase for variables/functions, PascalCase for components
+- **Naming**: kebab-case for files/folders, camelCase for variables/functions, PascalCase for components
 
 ## Repository Structure
 
 ```text
 quantum-commerce/
-├── .github/workflows/deploy.yml       # CI/CD pipeline
+├── .github/workflows/deploy.yml         # CI/CD pipeline (backend Docker + frontend Vercel)
 ├── backend/
 │   ├── src/
-│   │   ├── index.ts                   # Express + Apollo Server + schema + resolvers
-│   │   ├── models/                    # Mongoose models (User, Product, Cart, Address)
-│   │   └── seed.ts                    # Database seeder
-│   ├── Dockerfile                     # Multi-stage build (Node 24-alpine)
-│   ├── build-and-push.sh              # Docker build & push script
+│   │   ├── index.ts                     # Express + Apollo Server entry point
+│   │   ├── config/
+│   │   │   └── database.ts              # MongoDB connection via Mongoose
+│   │   ├── graphQL/
+│   │   │   ├── typeDefs/typeDefs.ts     # All GraphQL type definitions
+│   │   │   └── resolvers/resolvers.ts   # All GraphQL resolvers
+│   │   ├── models/
+│   │   │   ├── User.ts                  # User schema (BUYER, ADMIN, G_BUYER)
+│   │   │   ├── Product.ts               # Product schema (Electronics/Clothing/Books/Furniture)
+│   │   │   ├── Cart.ts                  # Cart schema (userId unique, items array)
+│   │   │   └── Address.ts               # Address schema
+│   │   ├── utils/
+│   │   │   └── auth.ts                  # JWT helpers, bcrypt, token generation
+│   │   └── scripts/
+│   │       └── seed.ts                  # Dev database seeder
+│   ├── dist/                            # Compiled JS output (gitignored)
+│   ├── Dockerfile                       # Multi-stage build (Node 24-alpine)
+│   ├── build-and-push.sh                # Docker build & push script
 │   └── package.json
 └── frontend/quantumcommerce-frontend/
-    ├── src/
-    │   ├── app/                       # Pages: layout, home, products, login, cart
-    │   ├── components/                # Navbar, ProtectedRoute
-    │   ├── contexts/                  # AuthContext (React Context API)
-    │   └── lib/                       # Apollo Client setup with auth link
+    ├── app/
+    │   ├── layout.tsx                   # Root layout: providers, Navbar, Footer, CartSyncBridge
+    │   ├── page.tsx                     # Homepage: hero, categories, tech stack, CTA
+    │   ├── login/page.tsx               # Login + signup form with Google OAuth
+    │   ├── products/page.tsx            # Product grid with GraphQL query
+    │   ├── cart/page.tsx                # Cart page (ProtectedRoute)
+    │   ├── cart/_components/
+    │   │   ├── CartList.tsx             # Cart items list with quantity controls
+    │   │   └── SaveForLaterList.tsx     # Save-for-later items (local only)
+    │   ├── about/page.tsx               # About page: tech stack, author info
+    │   └── globals.css                  # Tailwind + custom qc-* CSS variables & animations
+    ├── components/
+    │   ├── Navbar.tsx                   # Top nav: logo, links, theme toggle, cart badge, auth
+    │   ├── Footer.tsx                   # Footer
+    │   ├── Product.tsx                  # Product card: image, name, price, add/remove cart
+    │   ├── ProductImage.tsx             # Product image with fallback
+    │   ├── GoogleLoginButton.tsx        # Google OAuth button (@react-oauth/google)
+    │   ├── CartSyncBridge.tsx           # Invisible: syncs Zustand cart ↔ server (debounced 700ms)
+    │   └── ProtectedRoute.tsx           # Redirects unauthenticated users to /login
+    ├── contexts/
+    │   ├── AuthContext.tsx              # Auth state: user, token, login/signup/logout/googleLogin
+    │   └── ThemeContext.tsx             # Dark/light theme with localStorage persistence
+    ├── graphql/
+    │   ├── client.ts                    # Apollo Client: HTTP link + auth link (Bearer token)
+    │   └── gql.ts                       # All GraphQL queries and mutations
+    ├── stores/
+    │   └── cartStore.ts                 # Zustand: cart + saveForLater, persisted to localStorage
+    ├── hooks/
+    │   └── useLocalStorage.ts           # Custom localStorage hook
+    ├── models/
+    │   └── index.ts                     # TypeScript interfaces: IProduct, IUser, ICart, etc.
+    ├── providers/
+    │   ├── ApolloProvider.tsx           # Apollo Client provider wrapper
+    │   └── GoogleAuthProvider.tsx       # Google OAuth provider wrapper
+    ├── types/
+    │   └── global.d.ts                  # Global type declarations
     └── package.json
 ```
 
@@ -117,16 +166,20 @@ quantum-commerce/
 |----------|---------|---------|
 | `MONGODB_URI` | MongoDB Atlas connection string | `mongodb+srv://...` |
 | `DB_NAME` | Database name | `quantumcommerce` |
-| `JWT_SECRET` | JWT signing secret | (keep secret) |
+| `JWT_SECRET` | JWT signing secret | (keep secret, min 32 chars) |
 | `PORT` | Server port | `4000` |
 | `NODE_ENV` | Environment | `development` / `production` |
 | `CORS_ALLOWED_ORIGINS` | Allowed origins (comma-separated) | `http://localhost:3000,https://quantum-commerce-pi.vercel.app` |
+| `GOOGLE_CLIENT_ID` | Google OAuth app client ID | (from Google Cloud Console) |
+| `ADMIN_PASSWORD` | Admin seed user password | `admin123` |
+| `USER_PASSWORD` | Test seed user password | `test123` |
 
 ### Frontend (`.env.local`)
 
 | Variable | Purpose | Example |
 |----------|---------|---------|
 | `NEXT_PUBLIC_GRAPHQL_URL` | GraphQL endpoint | `https://quantumapi.sarkars.shop/graphql` |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth client ID (public) | (from Google Cloud Console) |
 
 ### GitHub Secrets (CI/CD)
 
@@ -134,28 +187,59 @@ quantum-commerce/
 
 ## Database Models
 
-- **User**: email, password, firstName, lastName, userType (BUYER/ADMIN), address ref
-- **Product**: name, description, price, inventory, category (Electronics/Clothing/Books/Furniture), imageUrl, addedBy ref
-- **Cart**: userId (unique), items [{productId, quantity}], updatedAt
-- **Address**: street, city, state, zip, country
+- **User**: `email` (unique), `password`, `firstName`, `lastName`, `userType` (BUYER/ADMIN/G_BUYER), `address` (ref), `createdAt`
+- **Product**: `id` (custom string), `name`, `description`, `price`, `inventory`, `category`, `imageUrl`, `isActive`, `addedBy` (ref), `createdAt`
+- **Cart**: `userId` (unique ref), `items` [{`product` ref, `quantity`}], `updatedAt`
+- **Address**: `street`, `city`, `state`, `zip`, `country`
+
+## GraphQL API
+
+### Queries
+| Query | Auth | Description |
+|-------|------|-------------|
+| `products` | No | Fetch all products |
+| `product(id)` | No | Fetch single product (custom id or MongoDB _id) |
+| `me` | Yes | Current authenticated user |
+| `myCart` | Yes | Current user's cart with populated products |
+| `systemStatus` | No | API health check with DB status |
+
+### Mutations
+| Mutation | Auth | Description |
+|----------|------|-------------|
+| `register(input)` | No | Create account (email, password, firstName, lastName) |
+| `login(input)` | No | Login with email + password → JWT |
+| `loginWithGoogle(idToken)` | No | Login/create account via Google → JWT |
+| `syncCart(input)` | Yes | Upsert cart items to server |
 
 ## Completed Features
 
-- **Authentication**: Login/signup with JWT, AuthContext (sessionStorage), ProtectedRoute, Apollo Client auto-injects Authorization headers
-- **Product Catalog**: GraphQL queries, product listing with images, responsive Tailwind UI
-- **Deployment**: Dockerized backend on EC2, frontend on Vercel, Cloudflare SSL/DNS
-- **CI/CD**: GitHub Actions auto-detects changes, semantic versioning, Docker build/push/deploy
-- **Security**: CORS configured, Cloudflare Flexible SSL, CSRF protection, JWT auth
+- **Authentication**: JWT login/signup with validation, Google OAuth 2.0, AuthContext (sessionStorage), ProtectedRoute, Apollo Client auto-injects Bearer token
+- **User Types**: BUYER (email/password), G_BUYER (Google OAuth), ADMIN
+- **Product Catalog**: GraphQL product queries, responsive product grid, product cards with cart integration
+- **Shopping Cart**: Zustand state (localStorage), add/remove/quantity controls, save-for-later, CartSyncBridge syncs to server on login
+- **Theme System**: Dark/light mode toggle, CSS variables, localStorage persistence
+- **Pages**: Home, Products, Cart (protected), Login/Signup, About
+- **Deployment**: Dockerized backend on EC2 (multi-platform), frontend on Vercel, Cloudflare SSL/DNS
+- **CI/CD**: GitHub Actions auto-detects changes, semantic versioning, Docker build/push/deploy pipeline
 
 ## Not Yet Implemented
 
 | Feature | Notes | Priority |
 |---------|-------|----------|
-| Rate Limiting | Backend-only (frontend can be bypassed). Protect registration endpoint. | High |
-| Shopping Cart UI | Backend mutations exist. Wire up frontend cart page. | High |
-| Checkout / Orders | No order model, payment, or checkout flow yet. | Medium |
-| Admin Panel | ADMIN role exists in schema. No admin UI for product management. | Medium |
-| Testing | No test suite (`npm test` is a stub). Add unit + integration tests. | Medium |
+| Rate Limiting | Backend-only. Protect registration + login endpoints | High |
+| Checkout / Orders | No Order model, payment processing, or checkout flow | High |
+| Product Filtering & Search | No filter by category/price, no search bar | Medium |
+| Admin Panel | ADMIN role exists; no UI to add/edit/delete products | Medium |
+| Testing | `npm test` is a stub. Needs unit + integration tests | Medium |
+| Save-for-Later Server Sync | Save-for-later is local-only; not persisted to DB | Low |
+| Wishlist | No wishlist feature | Low |
+| Order History | Users can't view past orders | Low |
+
+## Known Bugs
+
+1. **Product price type** (`backend/src/models/Product.ts`): `price` field uses `Float16Array` instead of `Number` — should be `price: { type: Number, required: true }`
+2. **Google login error handling** (`backend/src/graphQL/resolvers/resolvers.ts`): On token verification failure returns a string instead of throwing an Error — causes non-standard GraphQL errors
+3. **Save-for-later not synced**: CartSyncBridge only syncs main cart; save-for-later items lost on session end
 
 ## Troubleshooting
 
@@ -175,7 +259,7 @@ quantum-commerce/
 
 **Symptom**: `MongoServerError: connection refused`
 **Cause**: EC2 IP not whitelisted in Atlas
-**Fix**: Go to MongoDB Atlas → Network Access → Add EC2's public IP (or `0.0.0.0/0` for dev)
+**Fix**: MongoDB Atlas → Network Access → Add EC2's public IP (or `0.0.0.0/0` for dev)
 
 ### Docker Build Fails on EC2
 
@@ -187,18 +271,47 @@ quantum-commerce/
 
 **Symptom**: Protected routes redirect to login despite being logged in
 **Cause**: Token expired or missing from sessionStorage
-**Fix**: Check browser DevTools → Application → Session Storage for `token`. If expired, log in again.
+**Fix**: Check DevTools → Application → Session Storage for `token`. If missing/expired, log in again.
+
+### Cart Not Syncing
+
+**Symptom**: Cart items missing after login
+**Cause**: CartSyncBridge debounce or race condition; or cart was never synced before logout
+**Fix**: Add item to cart after logging in — CartSyncBridge fetches server cart on auth, then syncs on change
 
 ## Git Workflow
 
 - **`main`** — production branch, push triggers auto-deployment
-- **`Integration`** — feature integration branch, merge to `main` when ready
+- **`Integration`** — active development branch, always work here
 - Backend changes on `main` → Docker build → EC2 deploy
 - Frontend changes on `main` → Vercel auto-deploys
 - Pre-commit hooks run Prettier via lint-staged
 
+## Claude Code Skills
+
+Skills are invoked with `/skill-name` and help automate common tasks in this project.
+
+### Active Skills (use these)
+
+| Skill | When to Use |
+|-------|-------------|
+| `/frontend-design` | Building or redesigning any UI — pages, components, layouts. Generates high-quality, production-grade React/Tailwind code. Use before writing any frontend component from scratch. |
+| `/extract-errors` | Scan the codebase for TypeScript errors, runtime bugs, and warnings before committing or debugging. |
+
+### Recommended Skills to Add
+
+These don't exist yet but would be high-value for this project:
+
+| Skill | What It Would Do | Why Useful |
+|-------|-----------------|------------|
+| `/graphql-schema` | Generate or update GraphQL typeDefs and matching TypeScript interfaces together | Schema + types drift constantly as features grow |
+| `/test-writer` | Generate Jest/Vitest unit tests for resolvers, components, and utilities | Test coverage is currently zero |
+| `/security-review` | Check auth flows, input validation, JWT handling, and exposed endpoints for vulnerabilities | Auth + API surface changes frequently |
+| `/seed-data` | Generate realistic seed data scripts for new models | Speeds up local dev when adding new features |
+
 ## User (AKSHAY) Preferences
 
-- Prefers guided learning through leading questions over direct answers
-- Approaches development with production-ready practices from the start
-- Building this as a portfolio project to demonstrate full-stack + DevOps skills
+- Learning project — prefers guided questions over direct answers to build understanding
+- Production-ready practices from day one (Docker, CI/CD, JWT, CORS, etc.)
+- Portfolio project demonstrating full-stack + DevOps skills
+- Comfortable with TypeScript, GraphQL, Next.js App Router patterns

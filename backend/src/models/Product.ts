@@ -20,7 +20,7 @@ const ProductSchema = new Schema({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },
-  price: { type: Number, required: true },
+  price: { type: Float16Array, required: true },
   inventory: { type: Number, required: true },
   category: {
     type: String,

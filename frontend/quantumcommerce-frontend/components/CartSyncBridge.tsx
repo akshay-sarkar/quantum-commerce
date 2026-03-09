@@ -10,6 +10,7 @@ import { GET_MY_CART, SYNC_CART_MUTATION } from "@/graphql/gql";
 interface GetMyCartResponse {
   myCart: {
     items: ICartItem[];
+    savedForLaterItems: ICartItem[];
     id: string;
     updatedAt: string;
     userId: string;
@@ -22,6 +23,8 @@ export default function CartSyncBridge() {
   const { isAuthenticated } = useAuth();
   const cart = useCartStore((state) => state.cart);
   const setCart = useCartStore((state) => state.setCart);
+  const saveForLaterCart = useCartStore((state) => state.saveForLaterCart);
+  const setSaveForLaterCart = useCartStore((state) => state.setSaveForLaterCart);
   const [syncCart] = useMutation(SYNC_CART_MUTATION);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInitialLoadDone = useRef(false);
@@ -68,22 +71,33 @@ export default function CartSyncBridge() {
     }
     if (data?.myCart) {
       console.log("Fetched cart data:", data);
-      // Prevent immediate sync back of the data we just fetched
-      const serverSnapshot = generateSnapshot(data.myCart.items);
-      lastSyncedSnapshot.current = serverSnapshot;
+      const serverItemsSnapshot = generateSnapshot(data.myCart.items);
+      const serverSavedSnapshot = generateSnapshot(
+        data.myCart.savedForLaterItems,
+      );
+      lastSyncedSnapshot.current = `${serverItemsSnapshot}|${serverSavedSnapshot}`;
 
       setCart(data.myCart);
+      setSaveForLaterCart({
+        ...data.myCart,
+        items: data.myCart.savedForLaterItems,
+      });
       isInitialLoadDone.current = true;
     }
-  }, [loading, error, data, setCart, generateSnapshot]);
+  }, [loading, error, data, setCart, setSaveForLaterCart, generateSnapshot]);
 
-  const snapshot = useMemo(
+  const cartSnapshot = useMemo(
     () => generateSnapshot(cart?.items || []),
     [cart, generateSnapshot],
   );
 
+  const savedSnapshot = useMemo(
+    () => generateSnapshot(saveForLaterCart?.items || []),
+    [saveForLaterCart, generateSnapshot],
+  );
+
   useEffect(() => {
-    console.log("Cart snapshot changed:", snapshot);
+    console.log("Cart snapshot changed:", cartSnapshot, savedSnapshot);
     if (!isAuthenticated) {
       return;
     }
@@ -92,8 +106,8 @@ export default function CartSyncBridge() {
       return;
     }
 
-    // If the current snapshot matches what we last synced (or loaded), skip
-    if (snapshot === lastSyncedSnapshot.current) {
+    const combined = `${cartSnapshot}|${savedSnapshot}`;
+    if (combined === lastSyncedSnapshot.current) {
       return;
     }
 
@@ -105,10 +119,11 @@ export default function CartSyncBridge() {
       try {
         await syncCart({
           variables: {
-            items: JSON.parse(snapshot),
+            items: JSON.parse(cartSnapshot),
+            savedForLaterItems: JSON.parse(savedSnapshot),
           },
         });
-        lastSyncedSnapshot.current = snapshot;
+        lastSyncedSnapshot.current = combined;
       } catch (error) {
         console.error("Cart sync failed:", error);
       }
@@ -119,7 +134,7 @@ export default function CartSyncBridge() {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [isAuthenticated, snapshot, syncCart]);
+  }, [isAuthenticated, cartSnapshot, savedSnapshot, syncCart]);
 
   return null;
 }

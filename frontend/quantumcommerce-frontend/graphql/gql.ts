@@ -31,6 +31,17 @@ export const GET_MY_CART = gql`
           imageUrl
         }
       }
+      savedForLaterItems {
+        quantity
+        product {
+          id
+          name
+          description
+          price
+          category
+          imageUrl
+        }
+      }
     }
   }
 `;
@@ -67,8 +78,8 @@ export const REGISTER_MUTATION = gql`
 `;
 
 export const SYNC_CART_MUTATION = gql`
-  mutation SyncCart($items: [SyncCartItemInput!]!) {
-    syncCart(input: { items: $items }) {
+  mutation SyncCart($items: [SyncCartItemInput!]!, $savedForLaterItems: [SyncCartItemInput!]) {
+    syncCart(input: { items: $items, savedForLaterItems: $savedForLaterItems }) {
       id
       updatedAt
     }
