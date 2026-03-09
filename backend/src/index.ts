@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { connectDB } from './config/database';
 import { verifyToken } from './utils/auth';
 import typeDefs from './graphQL/typeDefs/typeDefs';
@@ -26,6 +27,32 @@ async function startServer() {
     credentials: true, // Required for cookie-based auth
   };
   app.use(cors(corsOptions));
+
+  // Parse body before rate limiters so req.body.operationName is available
+  app.use('/graphql', express.json());
+
+  // Broad limiter — all /graphql traffic
+  const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 500,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    message: { errors: [{ message: 'Too many requests, please try again later.' }] },
+  });
+
+  // Tight limiter — only fires for login / register / loginWithGoogle
+  const AUTH_OPERATIONS = new Set(['login', 'register', 'loginWithGoogle']);
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 20,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    skip: (req) => !AUTH_OPERATIONS.has(req.body?.operationName),
+    message: { errors: [{ message: 'Too many login attempts. Please try again in 15 minutes.' }] },
+  });
+
+  app.use('/graphql', globalLimiter);
+  app.use('/graphql', authLimiter);
 
   const server = new ApolloServer({
     typeDefs,

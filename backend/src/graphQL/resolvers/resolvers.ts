@@ -4,9 +4,10 @@ import CartModel from '../../models/Cart';
 import { comparePassword, generateToken, hashPassword } from '../../utils/auth';
 import mongoose from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
+import { AuthenticationError } from 'apollo-server-express';
+import crypto from 'crypto';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID?.trim();
-const JWT_SECRET = process.env.JWT_SECRET?.trim();
 
 const findProductByIdentifier = async (identifier: unknown) => {
   if (identifier === null || identifier === undefined) {
@@ -122,6 +123,11 @@ const resolvers = {
         throw new Error('Invalid email or password');
       }
 
+      // Block OAuth accounts from password-based login
+      if (user.userType === 'G_BUYER') {
+        throw new AuthenticationError('This account uses Google Sign-In. Please log in with Google.');
+      }
+
       // Verify password
       const isValidPassword = await comparePassword(password, user.password);
       if (!isValidPassword) {
@@ -185,7 +191,7 @@ const resolvers = {
         });
       } catch (error: any) {
         console.error('Google verification failed:', error.message);
-        return `Google login failed`;
+        throw new AuthenticationError('Google login failed. Please try again.');
       }
 
       const payload = ticket.getPayload();
@@ -215,12 +221,12 @@ const resolvers = {
 
       // Find or create user
       let user = await UserModel.findOne({ email });
-      const hashedPassword = await hashPassword(payload?.email ?? ('' + JWT_SECRET)); // deterministic password for OAuth users
       if (!user) {
-        // Create new user for Google OAuth (no password needed)
+        // Create new Google OAuth user with a random, unrecoverable password hash
+        const hashedPassword = await hashPassword(crypto.randomBytes(32).toString('hex'));
         user = await UserModel.create({
           email,
-          password: hashedPassword, // Store the deterministic password
+          password: hashedPassword,
           firstName: payload.given_name || '',
           lastName: payload.family_name || '',
           userType: 'G_BUYER',
