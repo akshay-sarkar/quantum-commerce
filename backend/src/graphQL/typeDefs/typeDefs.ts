@@ -5,7 +5,8 @@ const typeDefs = `
         products: [Product!]!,
         product(id: ID!): Product,
         me: User,
-        myCart: Cart
+        myCart: Cart,
+        users: [User!]!
     }
 
     type Mutation {
@@ -13,6 +14,11 @@ const typeDefs = `
         login(input: LoginInput!): AuthPayload!
         syncCart(input: SyncCartInput!): Cart!
         loginWithGoogle(idToken: String!): AuthPayload!
+        createProduct(input: CreateProductInput!): Product!
+        updateProduct(id: ID!, input: UpdateProductInput!): Product!
+        deleteProduct(id: ID!): Boolean!
+        updateUser(id: ID!, input: UpdateUserInput!): User!
+        deleteUser(id: ID!): Boolean!
     }
     
     
@@ -83,6 +89,30 @@ const typeDefs = `
     input SyncCartInput {
         items: [SyncCartItemInput!]!
         savedForLaterItems: [SyncCartItemInput!]
+    }
+    input CreateProductInput {
+        name: String!
+        description: String!
+        price: Float!
+        inventory: Int!
+        category: String!
+        imageUrl: String!
+        isActive: Boolean
+    }
+    input UpdateProductInput {
+        name: String
+        description: String
+        price: Float
+        inventory: Int
+        category: String
+        imageUrl: String
+        isActive: Boolean
+    }
+    input UpdateUserInput {
+        firstName: String
+        lastName: String
+        email: String
+        userType: String
     }
 `;
 

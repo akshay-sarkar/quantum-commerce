@@ -6,6 +6,8 @@ export interface IProduct {
   category: string;
   inventory: number;
   imageUrl: string;
+  isActive?: boolean;
+  createdAt?: string;
 }
 
 export interface IUser {
@@ -59,6 +61,20 @@ export interface ILoginResponse {
 
 export interface IRegisterResponse {
   register: IUserResponse;
+}
+
+// Admin
+export interface IGetUsersResponse {
+  users: IUser[];
+}
+export interface ICreateProductResponse {
+  createProduct: IProduct;
+}
+export interface IUpdateUserResponse {
+  updateUser: IUser;
+}
+export interface IDeleteUserResponse {
+  deleteUser: boolean;
 }
 
 // Context Creation

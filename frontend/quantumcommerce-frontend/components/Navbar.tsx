@@ -29,6 +29,16 @@ export default function Navbar() {
             Products
           </Link>
 
+          {user?.userType === "ADMIN" && (
+            <Link
+              href="/admin"
+              className="text-sm tracking-wide text-qc-accent hover:text-qc-accent-hover transition-colors duration-300"
+              aria-label="Admin"
+            >
+              Admin
+            </Link>
+          )}
+
           <Link
             href="/about"
             className="text-sm tracking-wide text-qc-muted hover:text-qc-text transition-colors duration-300"

@@ -58,6 +58,15 @@ const resolvers = {
         'savedForLaterItems.product',
       ]);
     },
+    users: async (parent: any, __: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      if (context.user.userType !== 'ADMIN') {
+        throw new AuthenticationError('Not authorized. Admin access required.');
+      }
+      return await UserModel.find().sort({ createdAt: -1 });
+    },
   },
   Mutation: {
     register: async (parent: any, { input }: any) => {
@@ -248,6 +257,162 @@ const resolvers = {
         token,
         user,
       };
+    },
+
+    createProduct: async (parent: any, { input }: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      if (context.user.userType !== 'ADMIN') {
+        throw new AuthenticationError('Not authorized. Admin access required.');
+      }
+
+      const { name, description, price, inventory, category, imageUrl, isActive } = input;
+
+      const allowedCategories = ['Electronics', 'Clothing', 'Books', 'Furniture'];
+      if (!allowedCategories.includes(category)) {
+        throw new Error(`Invalid category. Must be one of: ${allowedCategories.join(', ')}`);
+      }
+      if (!name || name.trim() === '') {
+        throw new Error('Product name is required');
+      }
+      if (!description || description.trim() === '') {
+        throw new Error('Product description is required');
+      }
+      if (price <= 0) {
+        throw new Error('Price must be greater than 0');
+      }
+      if (!Number.isInteger(inventory) || inventory < 0) {
+        throw new Error('Inventory must be a non-negative integer');
+      }
+      if (!imageUrl || imageUrl.trim() === '') {
+        throw new Error('Image URL is required');
+      }
+
+      const customId = crypto.randomUUID();
+
+      const product = await ProductModel.create({
+        id: customId,
+        name: name.trim(),
+        description: description.trim(),
+        price,
+        inventory,
+        category,
+        imageUrl: imageUrl.trim(),
+        isActive: isActive ?? true,
+        addedBy: context.user.userId,
+        createdAt: new Date(),
+      });
+
+      return product;
+    },
+
+    updateProduct: async (parent: any, { id, input }: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      if (context.user.userType !== 'ADMIN') {
+        throw new AuthenticationError('Not authorized. Admin access required.');
+      }
+
+      const product = await findProductByIdentifier(id);
+      if (!product) {
+        throw new Error(`Product not found: ${id}`);
+      }
+
+      const allowedCategories = ['Electronics', 'Clothing', 'Books', 'Furniture'];
+      if (input.category && !allowedCategories.includes(input.category)) {
+        throw new Error(`Invalid category. Must be one of: ${allowedCategories.join(', ')}`);
+      }
+      if (input.price !== undefined && input.price <= 0) {
+        throw new Error('Price must be greater than 0');
+      }
+      if (input.inventory !== undefined && (!Number.isInteger(input.inventory) || input.inventory < 0)) {
+        throw new Error('Inventory must be a non-negative integer');
+      }
+
+      const updates: Record<string, any> = {};
+      if (input.name !== undefined) updates.name = input.name.trim();
+      if (input.description !== undefined) updates.description = input.description.trim();
+      if (input.price !== undefined) updates.price = input.price;
+      if (input.inventory !== undefined) updates.inventory = input.inventory;
+      if (input.category !== undefined) updates.category = input.category;
+      if (input.imageUrl !== undefined) updates.imageUrl = input.imageUrl.trim();
+      if (input.isActive !== undefined) updates.isActive = input.isActive;
+
+      return await ProductModel.findByIdAndUpdate(product._id, updates, { new: true });
+    },
+
+    deleteProduct: async (parent: any, { id }: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      if (context.user.userType !== 'ADMIN') {
+        throw new AuthenticationError('Not authorized. Admin access required.');
+      }
+
+      const product = await findProductByIdentifier(id);
+      if (!product) {
+        throw new Error(`Product not found: ${id}`);
+      }
+
+      await ProductModel.findByIdAndDelete(product._id);
+      return true;
+    },
+
+    updateUser: async (parent: any, { id, input }: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      if (context.user.userType !== 'ADMIN') {
+        throw new AuthenticationError('Not authorized. Admin access required.');
+      }
+
+      const allowedUserTypes = ['BUYER', 'ADMIN', 'G_BUYER'];
+      if (input.userType && !allowedUserTypes.includes(input.userType)) {
+        throw new Error(`Invalid userType. Must be one of: ${allowedUserTypes.join(', ')}`);
+      }
+
+      if (input.email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(input.email)) {
+          throw new Error('Invalid email format');
+        }
+        const existing = await UserModel.findOne({ email: input.email.toLowerCase() });
+        if (existing && existing._id.toString() !== id) {
+          throw new Error('Email already in use by another account');
+        }
+      }
+
+      const updates: Record<string, any> = {};
+      if (input.firstName !== undefined) updates.firstName = input.firstName.trim();
+      if (input.lastName !== undefined) updates.lastName = input.lastName.trim();
+      if (input.email !== undefined) updates.email = input.email.toLowerCase().trim();
+      if (input.userType !== undefined) updates.userType = input.userType;
+
+      const user = await UserModel.findByIdAndUpdate(id, updates, { new: true });
+      if (!user) {
+        throw new Error(`User not found: ${id}`);
+      }
+      return user;
+    },
+
+    deleteUser: async (parent: any, { id }: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      if (context.user.userType !== 'ADMIN') {
+        throw new AuthenticationError('Not authorized. Admin access required.');
+      }
+      if (context.user.userId === id) {
+        throw new Error('Cannot delete your own admin account');
+      }
+
+      const user = await UserModel.findByIdAndDelete(id);
+      if (!user) {
+        throw new Error(`User not found: ${id}`);
+      }
+      return true;
     },
   },
   //-- Resolvers
