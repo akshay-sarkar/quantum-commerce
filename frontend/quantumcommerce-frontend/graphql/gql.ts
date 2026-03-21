@@ -31,6 +31,17 @@ export const GET_MY_CART = gql`
           imageUrl
         }
       }
+      savedForLaterItems {
+        quantity
+        product {
+          id
+          name
+          description
+          price
+          category
+          imageUrl
+        }
+      }
     }
   }
 `;
@@ -67,8 +78,8 @@ export const REGISTER_MUTATION = gql`
 `;
 
 export const SYNC_CART_MUTATION = gql`
-  mutation SyncCart($items: [SyncCartItemInput!]!) {
-    syncCart(input: { items: $items }) {
+  mutation SyncCart($items: [SyncCartItemInput!]!, $savedForLaterItems: [SyncCartItemInput!]) {
+    syncCart(input: { items: $items, savedForLaterItems: $savedForLaterItems }) {
       id
       updatedAt
     }
@@ -87,5 +98,108 @@ export const LOGIN_WITH_GOOGLE = gql`
         userType
       }
     }
+  }
+`;
+
+// ── Admin ────────────────────────────────────────────────────────────────────
+
+export const GET_USERS = gql`
+  query GetUsers {
+    users {
+      id
+      email
+      firstName
+      lastName
+      userType
+      createdAt
+    }
+  }
+`;
+
+export const CREATE_PRODUCT_MUTATION = gql`
+  mutation CreateProduct($input: CreateProductInput!) {
+    createProduct(input: $input) {
+      id
+      name
+      description
+      price
+      inventory
+      category
+      imageUrl
+      isActive
+      createdAt
+    }
+  }
+`;
+
+export const UPDATE_PRODUCT_MUTATION = gql`
+  mutation UpdateProduct($id: ID!, $input: UpdateProductInput!) {
+    updateProduct(id: $id, input: $input) {
+      id
+      name
+      description
+      price
+      inventory
+      category
+      imageUrl
+      isActive
+    }
+  }
+`;
+
+export const DELETE_PRODUCT_MUTATION = gql`
+  mutation DeleteProduct($id: ID!) {
+    deleteProduct(id: $id)
+  }
+`;
+
+export const UPDATE_USER_MUTATION = gql`
+  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
+    updateUser(id: $id, input: $input) {
+      id
+      email
+      firstName
+      lastName
+      userType
+      createdAt
+    }
+  }
+`;
+
+export const DELETE_USER_MUTATION = gql`
+  mutation DeleteUser($id: ID!) {
+    deleteUser(id: $id)
+  }
+`;
+
+export const GET_MY_ADDRESSES = gql`
+  query GetMyAddresses {
+    myAddresses {
+      id
+      street
+      city
+      state
+      zip
+      country
+    }
+  }
+`;
+
+export const SAVE_ADDRESS_MUTATION = gql`
+  mutation SaveAddress($input: AddressInput!) {
+    saveAddress(input: $input) {
+      id
+      street
+      city
+      state
+      zip
+      country
+    }
+  }
+`;
+
+export const DELETE_ADDRESS_MUTATION = gql`
+  mutation DeleteAddress($id: ID!) {
+    deleteAddress(id: $id)
   }
 `;

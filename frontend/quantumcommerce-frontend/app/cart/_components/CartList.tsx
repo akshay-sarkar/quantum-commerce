@@ -3,8 +3,10 @@
 import ProductImage from "@/components/ProductImage";
 import useCartStore from "@/stores/cartStore";
 import { useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 function CartList() {
+  const router = useRouter();
   const cart = useCartStore((state) => state.cart);
   const cartItems = useMemo(() => cart.items ?? [], [cart.items]);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
@@ -115,8 +117,19 @@ function CartList() {
           Quantity:{" "}
           <span className="font-medium text-qc-text">{totalQuantity}</span>
         </div>
-        <div className="text-lg font-semibold text-qc-text">
-          Total: ${totalPrice.toFixed(2)}
+        <div className="flex items-center gap-4">
+          <div className="text-lg font-semibold text-qc-text">
+            Total: ${totalPrice.toFixed(2)}
+          </div>
+          {cartItems.length > 0 && (
+            <button
+              onClick={() => router.push("/checkout")}
+              className="px-6 py-2 rounded bg-qc-accent text-qc-accent-on font-semibold hover:bg-qc-accent-hover transition-colors duration-200"
+              data-testid="checkout-btn"
+            >
+              Purchase
+            </button>
+          )}
         </div>
       </div>
     </div>

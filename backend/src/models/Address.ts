@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IAddress extends Document {
+  userId: mongoose.Types.ObjectId;
   street: string;
   city: string;
   state: string;
@@ -9,6 +10,7 @@ export interface IAddress extends Document {
 }
 
 const AddressSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
   street: { type: String, required: true, trim: true },
   city: { type: String, required: true, trim: true },
   state: { type: String, required: true, trim: true },

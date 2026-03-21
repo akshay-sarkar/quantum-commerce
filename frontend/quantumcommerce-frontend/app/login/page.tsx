@@ -71,6 +71,9 @@ export default function LoginPage() {
               ? "Welcome back to Quantum Commerce"
               : "Join the future of commerce"}
           </p>
+        </div>
+
+        <div className="border-t border-qc-border my-6">
           <GoogleLoginButton />
         </div>
 

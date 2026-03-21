@@ -5,7 +5,9 @@ const typeDefs = `
         products: [Product!]!,
         product(id: ID!): Product,
         me: User,
-        myCart: Cart
+        myCart: Cart,
+        myAddresses: [Address!]!,
+        users: [User!]!
     }
 
     type Mutation {
@@ -13,6 +15,13 @@ const typeDefs = `
         login(input: LoginInput!): AuthPayload!
         syncCart(input: SyncCartInput!): Cart!
         loginWithGoogle(idToken: String!): AuthPayload!
+        saveAddress(input: AddressInput!): Address!
+        deleteAddress(id: ID!): Boolean!
+        createProduct(input: CreateProductInput!): Product!
+        updateProduct(id: ID!, input: UpdateProductInput!): Product!
+        deleteProduct(id: ID!): Boolean!
+        updateUser(id: ID!, input: UpdateUserInput!): User!
+        deleteUser(id: ID!): Boolean!
     }
     
     
@@ -28,7 +37,6 @@ const typeDefs = `
         lastName: String!
         createdAt: String!
         userType: String!
-        address: [Address!]!
     }
     type AuthPayload {
         token: String!,
@@ -58,6 +66,7 @@ const typeDefs = `
         id: ID!,
         userId: ID!,
         items: [CartItem!]!,
+        savedForLaterItems: [CartItem!]!,
         updatedAt: String!
     }
     type CartItem {
@@ -81,6 +90,38 @@ const typeDefs = `
     }
     input SyncCartInput {
         items: [SyncCartItemInput!]!
+        savedForLaterItems: [SyncCartItemInput!]
+    }
+    input CreateProductInput {
+        name: String!
+        description: String!
+        price: Float!
+        inventory: Int!
+        category: String!
+        imageUrl: String!
+        isActive: Boolean
+    }
+    input UpdateProductInput {
+        name: String
+        description: String
+        price: Float
+        inventory: Int
+        category: String
+        imageUrl: String
+        isActive: Boolean
+    }
+    input UpdateUserInput {
+        firstName: String
+        lastName: String
+        email: String
+        userType: String
+    }
+    input AddressInput {
+        street: String!
+        city: String!
+        state: String!
+        zip: String!
+        country: String!
     }
 `;
 
