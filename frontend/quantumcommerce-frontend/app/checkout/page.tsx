@@ -60,13 +60,13 @@ export default function CheckoutPage() {
   const [addressError, setAddressError] = useState("");
   const [paymentError, setPaymentError] = useState("");
 
-  const { data: addressData, loading: addressLoading, refetch: refetchAddresses } = useQuery(
+  const { data: addressData, loading: addressLoading, refetch: refetchAddresses } = useQuery<{ myAddresses: IAddress[] }>(
     GET_MY_ADDRESSES,
     { fetchPolicy: "network-only" },
   );
 
-  const [saveAddress, { loading: savingAddress }] = useMutation(SAVE_ADDRESS_MUTATION);
-  const [deleteAddress, { loading: deletingAddress }] = useMutation(DELETE_ADDRESS_MUTATION);
+  const [saveAddress, { loading: savingAddress }] = useMutation<{ saveAddress: IAddress }>(SAVE_ADDRESS_MUTATION);
+  const [deleteAddress, { loading: deletingAddress }] = useMutation<{ deleteAddress: boolean }>(DELETE_ADDRESS_MUTATION);
 
   const savedAddresses: IAddress[] = addressData?.myAddresses ?? [];
 
@@ -111,7 +111,7 @@ export default function CheckoutPage() {
       const { data } = await saveAddress({
         variables: { input: { street: street.trim(), city: city.trim(), state: state.trim(), zip: zip.trim(), country: country.trim() } },
       });
-      const newAddr: IAddress = data.saveAddress;
+      const newAddr: IAddress = data!.saveAddress;
       await refetchAddresses();
       setConfirmedAddress(newAddr);
       setSelectedId(newAddr.id);
