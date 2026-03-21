@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { IAddress } from './Address';
 
 export interface IUser extends Document {
   email: string;
@@ -8,7 +7,6 @@ export interface IUser extends Document {
   lastName: string;
   createdAt: Date;
   userType: string;
-  address?: mongoose.Types.ObjectId | IAddress | null;
 }
 
 const UserSchema = new Schema({
@@ -24,7 +22,6 @@ const UserSchema = new Schema({
   lastName: { type: String, required: true, trim: true },
   createdAt: { type: Date, default: Date.now },
   userType: { type: String, required: true, enum: ['BUYER', 'ADMIN', 'G_BUYER'] },
-  address: { type: mongoose.Types.ObjectId, ref: 'Address' },
 });
 
 export default mongoose.model<IUser>('User', UserSchema);

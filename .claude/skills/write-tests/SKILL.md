@@ -16,69 +16,92 @@ Ask:
 
 ## Step 2: Check if Test Infrastructure Exists
 
-Run:
+The backend already has Jest + ts-jest configured. Run `ls backend/src/__tests__/` to see existing test files.
+
+**Backend test infrastructure** (already installed):
+- Jest + ts-jest, configured in `backend/package.json`
+- Test match: `**/__tests__/**/*.test.ts` — place new test files directly in `backend/src/__tests__/`, not in subdirectories
+- Setup file: `backend/src/__tests__/setup.ts` — seeds `JWT_SECRET` before module load; must exist before running tests
+
+**Frontend**: React Testing Library is not yet installed. If needed:
 ```bash
-# Backend
-cat backend/package.json | grep -E '"test|jest|vitest'
-ls backend/src/__tests__/ 2>/dev/null
-
-# Frontend
-cat frontend/quantumcommerce-frontend/package.json | grep -E '"test|jest|vitest'
-ls frontend/quantumcommerce-frontend/__tests__/ 2>/dev/null
+cd frontend/quantumcommerce-frontend
+npm install --save-dev @testing-library/react @testing-library/user-event jest-environment-jsdom
 ```
-
-If no test runner is installed, recommend and offer to install:
-- **Backend**: Jest + ts-jest + @types/jest + supertest
-- **Frontend**: Jest + @testing-library/react + @testing-library/user-event + jest-environment-jsdom
 
 ## Step 3: Backend — Resolver Tests
 
-For backend resolver tests, follow this pattern using Jest:
+The project uses a specific test structure derived from `address.test.ts`. Follow it exactly:
 
 ```typescript
-// backend/src/__tests__/resolvers/{resolverName}.test.ts
+// backend/src/__tests__/{resolverName}.test.ts
 
-import { resolvers } from '../graphQL/resolvers/resolvers';
-import User from '../models/User';
-import { generateToken } from '../utils/auth';
+import resolvers from '../graphQL/resolvers/resolvers';
+import UserModel from '../models/User';
+// import other models as needed
 
-// Mock mongoose model
+// ── Mock Mongoose models ──────────────────────────────────────────────────────
 jest.mock('../models/User');
+// jest.mock('../models/OtherModel');
 
-describe('{resolverName}', () => {
-  const mockContext = {
-    user: { userId: 'test-id', email: 'test@test.com', userType: 'BUYER' }
-  };
-  const mockContextUnauthenticated = { user: null };
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const authCtx = { user: { userId: 'user-123', userType: 'BUYER' } };
+const unauthCtx = { user: null };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+// ── {QueryName} ───────────────────────────────────────────────────────────────
+describe('Query.{queryName}', () => {
+  beforeEach(() => jest.clearAllMocks());
 
-  it('should succeed with valid input', async () => {
-    // arrange
-    // act
-    // assert
-  });
-
-  it('should throw if user is not authenticated', async () => {
+  // 1. Unauthenticated check FIRST (if auth required)
+  it('throws AuthenticationError when not authenticated', async () => {
     await expect(
-      resolvers.Query.{resolverName}({}, {}, mockContextUnauthenticated)
-    ).rejects.toThrow('Authentication required');
+      resolvers.Query.{queryName}({}, {}, unauthCtx)
+    ).rejects.toThrow(AuthenticationError);
   });
 
-  it('should throw if required input is missing', async () => {
-    // test validation
+  // 2. Input validation — one test per required field
+  // (for mutations with inputs)
+
+  // 3. Resource not found
+  it('returns null when resource does not exist', async () => { ... });
+
+  // 4. Happy path
+  it('returns the data when found', async () => { ... });
+});
+
+describe('Mutation.{mutationName}', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  const validInput = { /* all required fields */ };
+
+  // 1. Unauthenticated check FIRST
+  it('throws AuthenticationError when not authenticated', async () => {
+    await expect(
+      resolvers.Mutation.{mutationName}({}, { input: validInput }, unauthCtx)
+    ).rejects.toThrow(AuthenticationError);
   });
+
+  // 2. One test per required input field
+  it('throws when {field} is missing', async () => {
+    await expect(
+      resolvers.Mutation.{mutationName}({}, { input: { ...validInput, {field}: '' } }, authCtx)
+    ).rejects.toThrow('{Field} is required');
+  });
+
+  // 3. Resource not found
+  // 4. Happy path — create new
+  // 5. Happy path — update existing (if upsert)
 });
 ```
 
+**Ordering rule:** Always write unauthenticated check first, then validation, then not-found, then happy paths. This matches the project convention established in `address.test.ts`.
+
 **Common cases to always test for resolvers:**
 - Happy path (valid input, authenticated if required)
-- Unauthenticated access attempt (if auth required)
-- Invalid/missing inputs
+- Unauthenticated access attempt (if auth required) — **always first**
+- Invalid/missing inputs — one test per required field
 - Resource not found
-- Duplicate/conflict (for create operations)
+- Create vs update (if the resolver upserts)
 
 ## Step 4: Frontend — Component Tests
 

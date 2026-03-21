@@ -1,6 +1,7 @@
 import ProductModel from '../../models/Product';
 import UserModel from '../../models/User';
 import CartModel from '../../models/Cart';
+import AddressModel from '../../models/Address';
 import { comparePassword, generateToken, hashPassword } from '../../utils/auth';
 import mongoose from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
@@ -57,6 +58,12 @@ const resolvers = {
         'items.product',
         'savedForLaterItems.product',
       ]);
+    },
+    myAddresses: async (parent: any, __: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      return AddressModel.find({ userId: context.user.userId });
     },
     users: async (parent: any, __: any, context: any) => {
       if (!context.user) {
@@ -259,6 +266,45 @@ const resolvers = {
       };
     },
 
+    saveAddress: async (parent: any, { input }: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      const { street, city, state, zip, country } = input;
+      if (!street?.trim()) throw new Error('Street is required');
+      if (!city?.trim()) throw new Error('City is required');
+      if (!state?.trim()) throw new Error('State is required');
+      if (!zip?.trim()) throw new Error('ZIP code is required');
+      if (!country?.trim()) throw new Error('Country is required');
+      if (country.trim() === 'US' && !/^\d{5}$/.test(zip.trim())) {
+        throw new Error('US ZIP code must be exactly 5 digits');
+      }
+      if (country.trim() === 'CA' && !/^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/.test(zip.trim())) {
+        throw new Error('Canadian postal code must be in the format A1A 1A1');
+      }
+
+      return AddressModel.create({
+        userId: context.user.userId,
+        street: street.trim(),
+        city: city.trim(),
+        state: state.trim(),
+        zip: zip.trim(),
+        country: country.trim(),
+      });
+    },
+
+    deleteAddress: async (parent: any, { id }: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      const deleted = await AddressModel.findOneAndDelete({
+        _id: id,
+        userId: context.user.userId,
+      });
+      if (!deleted) throw new Error('Address not found or does not belong to you');
+      return true;
+    },
+
     createProduct: async (parent: any, { input }: any, context: any) => {
       if (!context.user) {
         throw new AuthenticationError('Not authenticated');
@@ -419,6 +465,9 @@ const resolvers = {
   User: {
     id: (parent: any) => parent._id,
     createdAt: (parent: any) => parent.createdAt.toISOString(),
+  },
+  Address: {
+    id: (parent: any) => parent._id,
   },
   Product: {
     id: (parent: any) => parent.id || parent._id?.toString(),

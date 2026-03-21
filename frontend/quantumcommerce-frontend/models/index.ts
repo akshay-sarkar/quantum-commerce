@@ -20,7 +20,7 @@ export interface IUser {
 }
 
 export interface IAddress {
-  userId: IUser["id"];
+  id: string;
   street: string;
   city: string;
   state: string;
@@ -72,9 +72,6 @@ export interface ICreateProductResponse {
 }
 export interface IUpdateUserResponse {
   updateUser: IUser;
-}
-export interface IDeleteUserResponse {
-  deleteUser: boolean;
 }
 
 // Context Creation

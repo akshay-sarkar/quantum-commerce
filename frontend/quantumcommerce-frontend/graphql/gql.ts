@@ -171,3 +171,35 @@ export const DELETE_USER_MUTATION = gql`
     deleteUser(id: $id)
   }
 `;
+
+export const GET_MY_ADDRESSES = gql`
+  query GetMyAddresses {
+    myAddresses {
+      id
+      street
+      city
+      state
+      zip
+      country
+    }
+  }
+`;
+
+export const SAVE_ADDRESS_MUTATION = gql`
+  mutation SaveAddress($input: AddressInput!) {
+    saveAddress(input: $input) {
+      id
+      street
+      city
+      state
+      zip
+      country
+    }
+  }
+`;
+
+export const DELETE_ADDRESS_MUTATION = gql`
+  mutation DeleteAddress($id: ID!) {
+    deleteAddress(id: $id)
+  }
+`;

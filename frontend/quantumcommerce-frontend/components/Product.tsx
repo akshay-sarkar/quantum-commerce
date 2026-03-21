@@ -1,21 +1,23 @@
 "use client";
 
+import { useCallback } from "react";
 import { IProduct } from "@/models";
 import useCartStore from "@/stores/cartStore";
 import ProductImage from "@/components/ProductImage";
 
-function Product(product: IProduct) {
+function Product({ product }: { product: IProduct }) {
   const addToCart = useCartStore((state) => state.addToCart);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const existingItemQuantity = useCartStore((state) =>
     state.existingItemQuantity(product.id),
   );
 
+  const handleCartAction = useCallback(() => {
+    existingItemQuantity > 0 ? removeFromCart(product.id) : addToCart(product);
+  }, [existingItemQuantity, product, addToCart, removeFromCart]);
+
   return (
-    <div
-      key={product.id}
-      className="qc-card border border-qc-border overflow-hidden"
-    >
+    <div className="qc-card border border-qc-border overflow-hidden">
       {product.imageUrl && <ProductImage product={product} />}
       <div className="p-6">
         <h2 className="text-lg font-medium text-qc-text mb-2">
@@ -25,7 +27,7 @@ function Product(product: IProduct) {
         <div className="flex justify-between items-center">
           <div className="flex flex-col items-start gap-1">
             <span className="text-xl font-bold text-qc-accent">
-              ${product.price}
+              ${product.price.toFixed(2)}
             </span>
             <p className="text-xs text-qc-muted">
               Category: {product.category}
@@ -38,11 +40,7 @@ function Product(product: IProduct) {
               </span>
             )}
             <button
-              onClick={() =>
-                existingItemQuantity > 0
-                  ? removeFromCart(product.id)
-                  : addToCart(product)
-              }
+              onClick={handleCartAction}
               className="px-4 py-2 bg-qc-accent text-qc-accent-on text-sm font-medium rounded hover:bg-qc-accent-hover transition-colors duration-300"
             >
               {existingItemQuantity > 0 ? "Remove from Cart" : "Add to Cart"}

@@ -39,7 +39,7 @@ npm run dev               # Next.js dev server, port 3000
 
 ```bash
 cd backend && npm run seed
-# Expected: "Database seeded successfully" with admin + test users + sample products
+# Expected: "Database seeded successfully" with admin + test users + 250 sample products
 # Default credentials: admin@quantumcommerce.com / admin123, akshay.sarkar@quantumcommerce.com / test123
 ```
 
@@ -97,6 +97,14 @@ cd backend && npm run seed
 ```text
 quantum-commerce/
 ├── .github/workflows/deploy.yml         # CI/CD pipeline (backend Docker + frontend Vercel)
+├── .claude/
+│   ├── commands/                        # Slash commands (plan, tdd, code-review, build-fix, etc.)
+│   ├── agents/                          # Agent definitions (architect, security-reviewer, etc.)
+│   ├── skills/                          # Skill definitions (frontend-design, write-tests, etc.)
+│   └── ecc-sources.md                   # Source URLs for everything-claude-code imports
+├── rules/
+│   ├── common/                          # General coding standards (style, git, testing, security…)
+│   └── typescript/                      # TypeScript-specific standards
 ├── backend/
 │   ├── src/
 │   │   ├── index.ts                     # Express + Apollo Server entry point
@@ -106,14 +114,17 @@ quantum-commerce/
 │   │   │   ├── typeDefs/typeDefs.ts     # All GraphQL type definitions
 │   │   │   └── resolvers/resolvers.ts   # All GraphQL resolvers
 │   │   ├── models/
-│   │   │   ├── User.ts                  # User schema (BUYER, ADMIN, G_BUYER)
+│   │   │   ├── User.ts                  # User schema (BUYER, ADMIN, G_BUYER) — has address ref
 │   │   │   ├── Product.ts               # Product schema (Electronics/Clothing/Books/Furniture)
 │   │   │   ├── Cart.ts                  # Cart schema (userId unique, items array)
-│   │   │   └── Address.ts               # Address schema
+│   │   │   └── Address.ts               # Address schema (one-to-one with User)
 │   │   ├── utils/
 │   │   │   └── auth.ts                  # JWT helpers, bcrypt, token generation
-│   │   └── scripts/
-│   │       └── seed.ts                  # Dev database seeder
+│   │   ├── scripts/
+│   │   │   └── seed.ts                  # Dev database seeder (250 products, 4 categories)
+│   │   └── __tests__/
+│   │       ├── setup.ts                 # Jest env setup (JWT_SECRET, NODE_ENV)
+│   │       └── address.test.ts          # Tests: myAddress query + saveAddress mutation (17 tests)
 │   ├── dist/                            # Compiled JS output (gitignored)
 │   ├── Dockerfile                       # Multi-stage build (Node 24-alpine)
 │   ├── build-and-push.sh                # Docker build & push script
@@ -126,8 +137,9 @@ quantum-commerce/
     │   ├── products/page.tsx            # Product grid with GraphQL query
     │   ├── cart/page.tsx                # Cart page (ProtectedRoute)
     │   ├── cart/_components/
-    │   │   ├── CartList.tsx             # Cart items list with quantity controls
+    │   │   ├── CartList.tsx             # Cart items list with quantity controls + Purchase button
     │   │   └── SaveForLaterList.tsx     # Save-for-later items (local only)
+    │   ├── checkout/page.tsx            # Checkout page: accordion address + payment steps
     │   ├── about/page.tsx               # About page: tech stack, author info
     │   └── globals.css                  # Tailwind + custom qc-* CSS variables & animations
     ├── components/
@@ -149,7 +161,7 @@ quantum-commerce/
     ├── hooks/
     │   └── useLocalStorage.ts           # Custom localStorage hook
     ├── models/
-    │   └── index.ts                     # TypeScript interfaces: IProduct, IUser, ICart, etc.
+    │   └── index.ts                     # TypeScript interfaces: IProduct, IUser, ICart, IAddress…
     ├── providers/
     │   ├── ApolloProvider.tsx           # Apollo Client provider wrapper
     │   └── GoogleAuthProvider.tsx       # Google OAuth provider wrapper
@@ -201,6 +213,7 @@ quantum-commerce/
 | `product(id)` | No | Fetch single product (custom id or MongoDB _id) |
 | `me` | Yes | Current authenticated user |
 | `myCart` | Yes | Current user's cart with populated products |
+| `myAddress` | Yes | Current user's saved shipping address (null if none) |
 | `systemStatus` | No | API health check with DB status |
 
 ### Mutations
@@ -210,30 +223,34 @@ quantum-commerce/
 | `login(input)` | No | Login with email + password → JWT |
 | `loginWithGoogle(idToken)` | No | Login/create account via Google → JWT |
 | `syncCart(input)` | Yes | Upsert cart items to server |
+| `saveAddress(input)` | Yes | Create or update user's shipping address (upsert) |
 
 ## Completed Features
 
 - **Authentication**: JWT login/signup with validation, Google OAuth 2.0, AuthContext (sessionStorage), ProtectedRoute, Apollo Client auto-injects Bearer token
 - **User Types**: BUYER (email/password), G_BUYER (Google OAuth), ADMIN
-- **Product Catalog**: GraphQL product queries, responsive product grid, product cards with cart integration
+- **Product Catalog**: GraphQL product queries, responsive product grid, product cards with cart integration. 250 products seeded across Electronics, Clothing, Books, Furniture.
 - **Shopping Cart**: Zustand state (localStorage), add/remove/quantity controls, save-for-later, CartSyncBridge syncs both cart and save-for-later to server on login
 - **Save-for-Later Server Sync**: Persisted to MongoDB via `savedForLaterItems` on Cart model; synced bidirectionally on auth and on change (debounced)
+- **Checkout Flow**: Purchase button in cart → `/checkout` page (ProtectedRoute). Accordion: Step 1 = Shipping Address (load saved or enter new), Step 2 = Payment Details (mock, no real charge). Address saved to MongoDB per user via `saveAddress` mutation.
+- **Address Storage**: `Address` model (one-to-one with User). `myAddress` query + `saveAddress` mutation. User.address stores single ObjectId ref; resolver upserts on subsequent saves.
+- **Admin Panel**: ADMIN role UI — manage users (view/edit/delete) and products (create/edit/delete) via protected admin pages
 - **Theme System**: Dark/light mode toggle, CSS variables, localStorage persistence
-- **Pages**: Home, Products, Cart (protected), Login/Signup, About
+- **Pages**: Home, Products, Cart (protected), Checkout (protected), Login/Signup, About, Admin (protected)
 - **Deployment**: Dockerized backend on EC2 (multi-platform), frontend on Vercel, Cloudflare SSL/DNS
 - **CI/CD**: GitHub Actions auto-detects changes, semantic versioning, Docker build/push/deploy pipeline
+- **Test Infrastructure**: Jest + ts-jest installed in backend. `npm test` runs 17 unit tests covering `myAddress` query, `saveAddress` mutation, and address field resolvers. Setup file seeds `JWT_SECRET` before module load.
 
 ## Not Yet Implemented
 
 | Feature | Notes | Priority |
 |---------|-------|----------|
 | Rate Limiting | Backend-only. Protect registration + login endpoints | High |
-| Checkout / Orders | No Order model, payment processing, or checkout flow | High |
+| Order Model & History | Checkout flow exists (UI + address) but no Order model or persistence | High |
+| Real Payment Processing | Payment form is mock only — no Stripe or payment gateway | High |
 | Product Filtering & Search | No filter by category/price, no search bar | Medium |
-| Admin Panel | ADMIN role exists; no UI to add/edit/delete products | Medium |
-| Testing | `npm test` is a stub. Needs unit + integration tests | Medium |
+| Expanded Test Coverage | 17 tests exist for address resolvers. Other resolvers, models, and frontend components untested | Medium |
 | Wishlist | No wishlist feature | Low |
-| Order History | Users can't view past orders | Low |
 
 ## Known Bugs
 
@@ -293,19 +310,34 @@ Skills are invoked with `/skill-name` and help automate common tasks in this pro
 
 | Skill | When to Use |
 |-------|-------------|
-| `/frontend-design` | Building or redesigning any UI — pages, components, layouts. Generates high-quality, production-grade React/Tailwind code. Use before writing any frontend component from scratch. |
+| `/frontend-design` | Building or redesigning any UI — pages, components, layouts. Generates high-quality, production-grade React/Tailwind code. |
 | `/extract-errors` | Scan the codebase for TypeScript errors, runtime bugs, and warnings before committing or debugging. |
+| `/write-tests` | Write Jest tests for backend resolvers or React Testing Library tests for frontend components. |
+| `/add-resolver` | Add a new GraphQL type, query, or mutation — updates both typeDefs and resolvers together. |
+| `/add-page` | Scaffold a new Next.js App Router page with ProtectedRoute, Apollo, and layout wiring. |
+| `/add-component` | Scaffold a new React component following project conventions (Tailwind `qc-*`, TypeScript, Apollo/Zustand). |
+| `/add-model` | Scaffold a new Mongoose model with TypeScript types. |
+| `/add-feature` | Scaffold a complete full-stack feature end-to-end: model → GraphQL → frontend. Good for learning. |
+| `/security-review` | Audit auth flows, input validation, JWT handling, CORS, and exposed endpoints. |
+| `/refactor-clean` | Find and remove dead code with test verification at each step. |
 
 ### Recommended Skills to Add
-
-These don't exist yet but would be high-value for this project:
 
 | Skill | What It Would Do | Why Useful |
 |-------|-----------------|------------|
 | `/graphql-schema` | Generate or update GraphQL typeDefs and matching TypeScript interfaces together | Schema + types drift constantly as features grow |
-| `/test-writer` | Generate Jest/Vitest unit tests for resolvers, components, and utilities | Test coverage is currently zero |
-| `/security-review` | Check auth flows, input validation, JWT handling, and exposed endpoints for vulnerabilities | Auth + API surface changes frequently |
 | `/seed-data` | Generate realistic seed data scripts for new models | Speeds up local dev when adding new features |
+
+## Supplementary Rules
+
+See `rules/` directory for supplementary coding standards (imported from [everything-claude-code](https://github.com/affaan-m/everything-claude-code)):
+
+- `rules/common/` — coding-style, git-workflow, testing, security, performance, patterns, hooks, agents
+- `rules/typescript/` — coding-style, hooks, patterns, security, testing
+
+These are reference documents. **Project-specific rules in this CLAUDE.md take precedence** if there is any conflict.
+
+Source tracking and re-fetch instructions: `.claude/ecc-sources.md`
 
 ## User (AKSHAY) Preferences
 

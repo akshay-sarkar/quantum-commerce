@@ -6,6 +6,7 @@ const typeDefs = `
         product(id: ID!): Product,
         me: User,
         myCart: Cart,
+        myAddresses: [Address!]!,
         users: [User!]!
     }
 
@@ -14,6 +15,8 @@ const typeDefs = `
         login(input: LoginInput!): AuthPayload!
         syncCart(input: SyncCartInput!): Cart!
         loginWithGoogle(idToken: String!): AuthPayload!
+        saveAddress(input: AddressInput!): Address!
+        deleteAddress(id: ID!): Boolean!
         createProduct(input: CreateProductInput!): Product!
         updateProduct(id: ID!, input: UpdateProductInput!): Product!
         deleteProduct(id: ID!): Boolean!
@@ -34,7 +37,6 @@ const typeDefs = `
         lastName: String!
         createdAt: String!
         userType: String!
-        address: [Address!]!
     }
     type AuthPayload {
         token: String!,
@@ -113,6 +115,13 @@ const typeDefs = `
         lastName: String
         email: String
         userType: String
+    }
+    input AddressInput {
+        street: String!
+        city: String!
+        state: String!
+        zip: String!
+        country: String!
     }
 `;
 
