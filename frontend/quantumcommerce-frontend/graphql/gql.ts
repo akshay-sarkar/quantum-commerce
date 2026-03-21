@@ -203,3 +203,31 @@ export const DELETE_ADDRESS_MUTATION = gql`
     deleteAddress(id: $id)
   }
 `;
+
+export const GET_MY_PAYMENTS = gql`
+  query GetMyPayments {
+    myPayments {
+      id
+      nameOnCard
+      last4
+      expiry
+    }
+  }
+`;
+
+export const SAVE_PAYMENT_MUTATION = gql`
+  mutation SavePayment($input: SavePaymentInput!) {
+    savePayment(input: $input) {
+      id
+      nameOnCard
+      last4
+      expiry
+    }
+  }
+`;
+
+export const DELETE_PAYMENT_MUTATION = gql`
+  mutation DeletePayment($id: ID!) {
+    deletePayment(id: $id)
+  }
+`;

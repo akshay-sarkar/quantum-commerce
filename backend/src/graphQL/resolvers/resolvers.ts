@@ -2,6 +2,7 @@ import ProductModel from '../../models/Product';
 import UserModel from '../../models/User';
 import CartModel from '../../models/Cart';
 import AddressModel from '../../models/Address';
+import PaymentModel from '../../models/Payment';
 import { comparePassword, generateToken, hashPassword } from '../../utils/auth';
 import mongoose from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
@@ -64,6 +65,12 @@ const resolvers = {
         throw new AuthenticationError('Not authenticated');
       }
       return AddressModel.find({ userId: context.user.userId });
+    },
+    myPayments: async (parent: any, __: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      return PaymentModel.find({ userId: context.user.userId });
     },
     users: async (parent: any, __: any, context: any) => {
       if (!context.user) {
@@ -305,6 +312,45 @@ const resolvers = {
       return true;
     },
 
+    savePayment: async (parent: any, { input }: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      const { nameOnCard, cardNumber, expiry } = input;
+      if (!nameOnCard?.trim()) throw new Error('Name on card is required');
+      const rawCard = cardNumber?.replace(/\s/g, '') ?? '';
+      if (!/^\d{16}$/.test(rawCard)) throw new Error('Card number must be 16 digits');
+      if (!/^\d{2}\/\d{2}$/.test(expiry?.trim())) throw new Error('Expiry must be MM/YY');
+      const [mm, yy] = expiry.trim().split('/').map(Number);
+      if (mm < 1 || mm > 12) throw new Error('Expiry month must be between 01 and 12');
+      const now = new Date();
+      const currentYear = now.getFullYear() % 100;
+      const currentMonth = now.getMonth() + 1;
+      if (yy < currentYear || (yy === currentYear && mm < currentMonth)) {
+        throw new Error('Card has expired');
+      }
+
+      // Only persist nameOnCard, last4, and expiry — never the full card number
+      return PaymentModel.create({
+        userId: context.user.userId,
+        nameOnCard: nameOnCard.trim(),
+        last4: rawCard.slice(-4),
+        expiry: expiry.trim(),
+      });
+    },
+
+    deletePayment: async (parent: any, { id }: any, context: any) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not authenticated');
+      }
+      const deleted = await PaymentModel.findOneAndDelete({
+        _id: id,
+        userId: context.user.userId,
+      });
+      if (!deleted) throw new Error('Payment not found or does not belong to you');
+      return true;
+    },
+
     createProduct: async (parent: any, { input }: any, context: any) => {
       if (!context.user) {
         throw new AuthenticationError('Not authenticated');
@@ -467,6 +513,9 @@ const resolvers = {
     createdAt: (parent: any) => parent.createdAt.toISOString(),
   },
   Address: {
+    id: (parent: any) => parent._id,
+  },
+  Payment: {
     id: (parent: any) => parent._id,
   },
   Product: {

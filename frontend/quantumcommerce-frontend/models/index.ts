@@ -28,6 +28,13 @@ export interface IAddress {
   country: string;
 }
 
+export interface IPayment {
+  id: string;
+  nameOnCard: string;
+  last4: string;
+  expiry: string;
+}
+
 export interface ICartItem {
   product: IProduct;
   quantity: number;

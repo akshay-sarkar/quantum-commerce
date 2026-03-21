@@ -7,6 +7,7 @@ const typeDefs = `
         me: User,
         myCart: Cart,
         myAddresses: [Address!]!,
+        myPayments: [Payment!]!,
         users: [User!]!
     }
 
@@ -17,6 +18,8 @@ const typeDefs = `
         loginWithGoogle(idToken: String!): AuthPayload!
         saveAddress(input: AddressInput!): Address!
         deleteAddress(id: ID!): Boolean!
+        savePayment(input: SavePaymentInput!): Payment!
+        deletePayment(id: ID!): Boolean!
         createProduct(input: CreateProductInput!): Product!
         updateProduct(id: ID!, input: UpdateProductInput!): Product!
         deleteProduct(id: ID!): Boolean!
@@ -115,6 +118,17 @@ const typeDefs = `
         lastName: String
         email: String
         userType: String
+    }
+    type Payment {
+        id: ID!
+        nameOnCard: String!
+        last4: String!
+        expiry: String!
+    }
+    input SavePaymentInput {
+        nameOnCard: String!
+        cardNumber: String!
+        expiry: String!
     }
     input AddressInput {
         street: String!
